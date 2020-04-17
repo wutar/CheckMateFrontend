@@ -1,0 +1,17 @@
+{
+  "name": "check-mate",
+  "displayName": "check-mate",
+  "expo": {
+    "name": "check-mate",
+    "slug": "check-mate",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
