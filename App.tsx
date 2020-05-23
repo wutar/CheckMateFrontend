@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, PermissionsAndroid } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  PermissionsAndroid,
+} from "react-native";
 import Swiper from "react-native-swiper";
 
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -347,11 +353,14 @@ function PlayersMap() {
         setCurrentLatitude(position.coords.latitude);
         //getting the Latitude from the location json
       },
-      (error) => alert(error.message),
+      (error) => {
+        getLocation();
+        alert(error.code);
+      },
       {
         enableHighAccuracy: false,
-        maximumAge: 250,
-        //timeout: 20000,
+        timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
+        maximumAge: 1000 * 3600 * 24, // 24 h
       }
     );
   };
@@ -362,41 +371,62 @@ function PlayersMap() {
           if (!res.enabled) {
             RNReactNativeLocationServicesSettings.askForEnabling((res) => {
               if (res) {
-                alert("location services were allowed by the user");
                 setLocationEnabled(true);
-                getLocation();
-              } else {
-                console.log("location services were denied by the user");
               }
             });
           } else {
             setLocationEnabled(true);
-            getLocation();
           }
         }
       );
     } else {
       getLocation();
     }
-    getLocation();
-
     return () => {};
   }, [locationEnabled, currentLatitude, currentLongitude]);
+  if (!(currentLatitude === 0 && currentLongitude === 0))
+    return (
+      <View style={styles.mapContainer}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          customMapStyle={mapStylesJSON}
+          showsUserLocation={true}
+          followsUserLocation={true}
+          scrollEnabled={true}
+          zoomEnabled={true}
+          initialRegion={{
+            latitude: currentLatitude,
+            longitude: currentLongitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: Dimensions.get("window").width - 20,
+            backgroundColor: "transparent",
+          }}
+        ></View>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: Dimensions.get("window").width - 20,
+            left: 0,
+            backgroundColor: "transparent",
+          }}
+        ></View>
+      </View>
+    );
   return (
-    <View style={styles.mapContainer}>
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        customMapStyle={mapStylesJSON}
-        showsUserLocation={true}
-        followsUserLocation={true}
-        initialRegion={{
-          latitude: currentLatitude,
-          longitude: currentLongitude,
-          latitudeDelta: 0.001,
-          longitudeDelta: 0.001,
-        }}
-      />
+    <View>
+      <Text> Location not enabled </Text>
     </View>
   );
 }
@@ -404,7 +434,7 @@ function PlayersMap() {
 function GamesOverview() {
   return (
     <View>
-      <Text> Games of </Text>
+      <Text> Games of Player</Text>
     </View>
   );
 }
