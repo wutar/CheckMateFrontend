@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, PermissionsAndroid } from "react-native";
 import Swiper from "react-native-swiper";
+
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import RNReactNativeLocationServicesSettings from "react-native-location-services-settings";
 import Geolocation from "@react-native-community/geolocation";
 
 const mapStylesJSON = [
@@ -335,7 +337,8 @@ const styles = StyleSheet.create({
 function PlayersMap() {
   const [currentLongitude, setCurrentLongitude] = useState(0);
   const [currentLatitude, setCurrentLatitude] = useState(0);
-  useEffect(() => {
+  const [locationEnabled, setLocationEnabled] = useState(false);
+  const getLocation = (): void => {
     Geolocation.getCurrentPosition(
       //Will give you the current location
       (position) => {
@@ -346,12 +349,39 @@ function PlayersMap() {
       },
       (error) => alert(error.message),
       {
-        enableHighAccuracy: true,
-        timeout: 20000,
+        enableHighAccuracy: false,
+        maximumAge: 250,
+        //timeout: 20000,
       }
     );
+  };
+  useEffect(() => {
+    if (!locationEnabled) {
+      RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
+        (res) => {
+          if (!res.enabled) {
+            RNReactNativeLocationServicesSettings.askForEnabling((res) => {
+              if (res) {
+                alert("location services were allowed by the user");
+                setLocationEnabled(true);
+                getLocation();
+              } else {
+                console.log("location services were denied by the user");
+              }
+            });
+          } else {
+            setLocationEnabled(true);
+            getLocation();
+          }
+        }
+      );
+    } else {
+      getLocation();
+    }
+    getLocation();
+
     return () => {};
-  }, []);
+  }, [locationEnabled, currentLatitude, currentLongitude]);
   return (
     <View style={styles.mapContainer}>
       <MapView
