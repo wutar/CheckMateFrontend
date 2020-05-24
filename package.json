@@ -31,6 +31,7 @@
     "react-native-unimodules": "~0.9.0",
     "react-native-web": "~0.11.7",
     "react-native-windows": "^0.61.9",
+    "ts-type-guards": "^0.6.1",
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {

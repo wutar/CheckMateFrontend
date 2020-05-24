@@ -3,7 +3,8 @@ import { Text, View, Button } from "react-native";
 import { ButtonGroup, ElementObject, Input } from "react-native-elements";
 import Swiper from "react-native-swiper";
 import PlayersMap from "../components/PlayersMap";
-import { AuthContext } from "../Contexts/AuthContext";
+import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
+import AuthorizationApp from "../components/auth/AuthorizationApp";
 
 function GamesOverview() {
   return (
@@ -14,9 +15,12 @@ function GamesOverview() {
 }
 
 function PlayerStats() {
+  const auth: AuthContextProps = useContext(AuthContext);
+
   return (
     <View>
       <Text> Your stats </Text>
+      <Button title="Logout" onPress={() => auth.logout()} />
     </View>
   );
 }
@@ -28,8 +32,8 @@ export default function CheckMate() {
   const updateIndex = (index) => {
     swiper.current?.scrollTo(index);
   };
-  const { loggedIn, login, logout } = useContext(AuthContext);
-  return loggedIn ? (
+  const auth: AuthContextProps = useContext(AuthContext);
+  return auth.user ? (
     <>
       <Swiper
         index={selectedIndex}
@@ -44,10 +48,6 @@ export default function CheckMate() {
       <ButtonGroup buttons={buttons} onPress={updateIndex} />
     </>
   ) : (
-    <>
-      <Input placeholder="E-mail" />
-      <Input placeholder="Password" />
-      <Button title="login" onPress={login} />
-    </>
+    <AuthorizationApp />
   );
 }
