@@ -354,7 +354,6 @@ export default function PlayersMap() {
       },
       (error) => {
         getLocation();
-        alert(error.code);
       },
       {
         enableHighAccuracy: false,

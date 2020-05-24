@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import * as firebase from "@react-native-firebase/app";
 
 interface AuthContextProps {
   loggedIn: boolean;

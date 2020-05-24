@@ -3,6 +3,7 @@
   "scripts": {
     "android": "react-native run-android",
     "android-shake": "adb shell input keyevent 82",
+    "postinstall": "patch-package",
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
@@ -11,9 +12,11 @@
   "dependencies": {
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-firebase/app": "^7.0.1",
+    "@react-native-firebase/auth": "^7.1.0",
     "bufferutil": "^4.0.1",
     "expo": "^37.0.12",
     "expo-updates": "~0.1.0",
+    "patch-package": "^6.2.2",
     "react": "^16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "^0.62.2",

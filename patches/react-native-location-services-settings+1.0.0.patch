@@ -1,0 +1,14 @@
+diff --git a/node_modules/react-native-location-services-settings/android/build.gradle b/node_modules/react-native-location-services-settings/android/build.gradle
+index 0c183e0..c7ffdd9 100644
+--- a/node_modules/react-native-location-services-settings/android/build.gradle
++++ b/node_modules/react-native-location-services-settings/android/build.gradle
+@@ -39,6 +39,6 @@ repositories {
+ }
+ 
+ dependencies {
+-    provided 'com.facebook.react:react-native:+'
+-    compile 'com.google.android.gms:play-services-location:11.0.1'
++    implementation 'com.facebook.react:react-native:+'
++    implementation 'com.google.android.gms:play-services-location:11.0.1'
+ }
+\ No newline at end of file

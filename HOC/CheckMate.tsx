@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Text, View, Button } from "react-native";
-import { ButtonGroup, ElementObject } from "react-native-elements";
+import { ButtonGroup, ElementObject, Input } from "react-native-elements";
 import Swiper from "react-native-swiper";
 import PlayersMap from "../components/PlayersMap";
 import { AuthContext } from "../Contexts/AuthContext";
@@ -44,6 +44,10 @@ export default function CheckMate() {
       <ButtonGroup buttons={buttons} onPress={updateIndex} />
     </>
   ) : (
-    <Button title="login" onPress={login} />
+    <>
+      <Input placeholder="E-mail" />
+      <Input placeholder="Password" />
+      <Button title="login" onPress={login} />
+    </>
   );
 }

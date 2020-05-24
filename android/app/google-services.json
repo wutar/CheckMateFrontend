@@ -8,9 +8,46 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:507819007828:android:2c43780f9f81bd484b72c1",
+        "mobilesdk_app_id": "1:507819007828:android:93a530d81e350ec54b72c1",
         "android_client_info": {
           "package_name": "com.checkmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "507819007828-viqn0olhea9qu1h7dfp0hpasajgmsaa9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.checkmate",
+            "certificate_hash": "76cf7507e76e443c37e5720373ac8dfa67b2b206"
+          }
+        },
+        {
+          "client_id": "507819007828-3s2lk8clhd30tu1bcv0fc2gtir8ggmul.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvjeR1NXyh46JGUKsxpMEoMC7ws_JybHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "507819007828-3s2lk8clhd30tu1bcv0fc2gtir8ggmul.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:507819007828:android:2c43780f9f81bd484b72c1",
+        "android_client_info": {
+          "package_name": "com.wutar.checkmate"
         }
       },
       "oauth_client": [
