@@ -24,16 +24,24 @@ export default function Register() {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const auth: AuthContextProps = useContext(AuthContext);
   const [error, setError] = useState("");
 
   const register = () => {
-    if (password === "" || isNull(password) || email === "" || isNull(email)) {
+    if (
+      password === "" ||
+      isNull(password) ||
+      email === "" ||
+      isNull(email) ||
+      username === "" ||
+      isNull(username)
+    ) {
       setError("All fields are required!");
     } else {
       if (password === passwordConfirmation) {
         setError(auth.error);
-        auth.register(password, email);
+        auth.register(password, email, username);
       } else {
         setError("Passwords don't match. Did you mistype?");
       }
@@ -42,6 +50,12 @@ export default function Register() {
 
   return (
     <View style={styles.view}>
+      <TextInput
+        placeholder="Username"
+        value={username}
+        onChangeText={(text) => setUsername(text)}
+        style={styles.input}
+      />
       <TextInput
         placeholder="E-mail"
         value={email}
@@ -62,7 +76,7 @@ export default function Register() {
         onChangeText={(text) => setPasswordConfirmation(text)}
         style={styles.input}
       />
-      <Button color="#fffff" title="Register" onPress={() => register()} />
+      <Button title="Register" onPress={() => register()} />
       <Text style={{ color: "red" }}>{error}</Text>
     </View>
   );

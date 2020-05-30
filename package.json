@@ -13,6 +13,7 @@
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-firebase/app": "^7.0.1",
     "@react-native-firebase/auth": "^7.1.0",
+    "@react-native-firebase/firestore": "^7.1.2",
     "bufferutil": "^4.0.1",
     "expo": "^37.0.12",
     "expo-updates": "~0.1.0",

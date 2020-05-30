@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Geolocation from "@react-native-community/geolocation";
 import RNReactNativeLocationServicesSettings from "react-native-location-services-settings";
 import {
@@ -10,6 +10,10 @@ import {
   Button,
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import {
+  LocationContextProps,
+  LocationContext,
+} from "../Contexts/LocationContext";
 
 const mapStylesJSON = [
   {
@@ -343,22 +347,30 @@ export default function PlayersMap() {
   const [currentLongitude, setCurrentLongitude] = useState(0);
   const [currentLatitude, setCurrentLatitude] = useState(0);
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const location: LocationContextProps = useContext(LocationContext);
   const getLocation = (): void => {
-    Geolocation.getCurrentPosition(
+    Geolocation.watchPosition(
       //Will give you the current location
       (position) => {
+        alert("hallo");
         setCurrentLongitude(position.coords.longitude);
         //getting the Longitude from the location json
         setCurrentLatitude(position.coords.latitude);
+        alert(position.coords.latitude);
         //getting the Latitude from the location json
+        location.exposeLocation(
+          position.coords.longitude,
+          position.coords.latitude
+        );
       },
       (error) => {
-        getLocation();
+        alert(error);
+        //getLocation();
       },
       {
         enableHighAccuracy: false,
         timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
-        maximumAge: 1000 * 3600 * 24, // 24 h
+        maximumAge: 1000 * 60 * 15, // 15min
       }
     );
   };
