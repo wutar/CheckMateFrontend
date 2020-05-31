@@ -352,13 +352,15 @@ export default function PlayersMap() {
     Geolocation.watchPosition(
       //Will give you the current location
       (position) => {
-        alert("hallo");
         setCurrentLongitude(position.coords.longitude);
         //getting the Longitude from the location json
         setCurrentLatitude(position.coords.latitude);
-        alert(position.coords.latitude);
         //getting the Latitude from the location json
-        location.exposeLocation(
+        /*  location.exposeLocation(
+          position.coords.longitude,
+          position.coords.latitude
+        );*/
+        location.getNearHotspots(
           position.coords.longitude,
           position.coords.latitude
         );

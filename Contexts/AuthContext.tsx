@@ -26,7 +26,7 @@ export const AuthProvider = (props) => {
         });
         firestore()
           .collection("users")
-          .add({ email: email.toLowerCase(), name: username, lat: 0, long: 0 });
+          .add({ email: email.toLowerCase(), name: username });
       })
       .catch((error) => {
         switch (error.code) {

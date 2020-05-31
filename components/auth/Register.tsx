@@ -29,6 +29,7 @@ export default function Register() {
   const [error, setError] = useState("");
 
   const register = () => {
+    alert("hallo");
     if (
       password === "" ||
       isNull(password) ||
