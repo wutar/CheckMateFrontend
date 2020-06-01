@@ -18,6 +18,8 @@ export const AuthProvider = (props) => {
   const [error, setError] = useState<string>("");
 
   const register = (password: string, email: string, username: string) => {
+    alert("hallo");
+
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async (data) => {

@@ -1,8 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import * as fb from "@react-native-firebase/app";
-import firebase from "firebase/app";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
+import * as firebase from "firebase";
+import "firebase/firestore";
+import { firebaseConfig } from "../firebaseConfig";
 import { AuthContextProps, AuthContext } from "./AuthContext";
 import * as geofirex from "geofirex";
 import { GeoFireQuery, FirePoint } from "geofirex";
@@ -12,27 +11,30 @@ export interface LocationContextProps {
 }
 
 export const LocationContext = createContext({} as LocationContextProps);
-
 export const LocationProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
+  if (firebase.apps.length === 0) {
+    firebase.initializeApp(firebaseConfig);
+    const firestore = firebase.firestore();
+  }
 
-  const geo = geofirex.init(firebase);
   const getNearHotspots = (lat: number, long: number): Array<FirePoint> => {
-    const hotspots = firestore().collection("hotspots");
+    const geo = geofirex.init(firebase);
+
     const center = geo.point(lat, long);
+    alert(center);
     const radius = 15; //query hotspots in a radius of 15 km
-    const query = geo.query(hotspots).within(center, radius, "position");
-    return [];
+    return [geo.point(0, 0)];
   };
 
   const exposeLocation = async (lat: number, long: number) => {
-    const userDoc = (
+    /* const userDoc = (
       await firestore()
         .collection("users")
         .where("email", "==", auth.user!.email)
         .get()
     ).docs[0];
-    userDoc.ref.update({ location: geo.point(lat, long) });
+    userDoc.ref.update({ location: geo.point(lat, long) });*/
   };
 
   useEffect(() => {}, []);
