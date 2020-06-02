@@ -4,10 +4,12 @@ import "firebase/firestore";
 import { firebaseConfig } from "../firebaseConfig";
 import { AuthContextProps, AuthContext } from "./AuthContext";
 import * as geofirex from "geofirex";
+
 import { GeoFireQuery, FirePoint } from "geofirex";
+import { Observable } from "rxjs";
 export interface LocationContextProps {
   exposeLocation(lat: number, long: number): void;
-  getNearHotspots(lat: number, long: number): Array<FirePoint>;
+  getNearHotspots(lat: number, long: number): Promise<any>;
 }
 
 export const LocationContext = createContext({} as LocationContextProps);
@@ -18,13 +20,14 @@ export const LocationProvider = (props) => {
     const firestore = firebase.firestore();
   }
 
-  const getNearHotspots = (lat: number, long: number): Array<FirePoint> => {
+  const getNearHotspots = (lat: number, long: number): Promise<any> => {
+    const hotspots = firebase.firestore().collection("hotspots");
     const geo = geofirex.init(firebase);
-
     const center = geo.point(lat, long);
-    alert(center);
-    const radius = 15; //query hotspots in a radius of 15 km
-    return [geo.point(0, 0)];
+    const radius = 5; //query hotspots in a radius of 5 km
+    const query = geo.query(hotspots).within(center, radius, "position");
+    const items = geofirex.get(query);
+    return items;
   };
 
   const exposeLocation = async (lat: number, long: number) => {

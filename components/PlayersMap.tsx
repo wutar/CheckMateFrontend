@@ -9,11 +9,12 @@ import {
   PermissionsAndroid,
   Button,
 } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   LocationContextProps,
   LocationContext,
 } from "../Contexts/LocationContext";
+import { GeoQueryDocument } from "geofirex";
 
 const mapStylesJSON = [
   {
@@ -343,31 +344,73 @@ const styles = StyleSheet.create({
   },
 });
 
+interface Hotspot {
+  hitMetaData: object;
+  id: number;
+  position: {
+    geohash: string;
+    geopoint: {
+      longitude: number;
+      latitude: number;
+    };
+  };
+}
+
 export default function PlayersMap() {
   const [currentLongitude, setCurrentLongitude] = useState(0);
   const [currentLatitude, setCurrentLatitude] = useState(0);
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const [markerState, setMarkerState] = useState<Array<JSX.Element>>([]);
+  const [hotspots, setHotspots] = useState<Array<Hotspot>>([]);
   const location: LocationContextProps = useContext(LocationContext);
+  const getMarkers = (): Array<JSX.Element> => {
+    const markers = hotspots.map((hotspot) => {
+      return (
+        <Marker
+          key={hotspot.id}
+          coordinate={{
+            latitude: hotspot.position.geopoint.latitude,
+            longitude: hotspot.position.geopoint.latitude,
+          }}
+        />
+      );
+      return markers;
+    });
+
+    return markers;
+  };
   const getLocation = (): void => {
     Geolocation.watchPosition(
-      //Will give you the current location
+      // Will give you the current location
       (position) => {
         setCurrentLongitude(position.coords.longitude);
-        //getting the Longitude from the location json
+        // getting the Longitude from the location json
         setCurrentLatitude(position.coords.latitude);
-        //getting the Latitude from the location json
-        /*  location.exposeLocation(
-          position.coords.longitude,
-          position.coords.latitude
-        );*/
-        location.getNearHotspots(
-          position.coords.longitude,
-          position.coords.latitude
-        );
+        // getting the Latitude from the location json
+        location
+          .getNearHotspots(position.coords.latitude, position.coords.longitude)
+          .then((hotspotsFromQuery) => {
+            setHotspots(hotspotsFromQuery);
+            const markers = hotspotsFromQuery.map((hotspot) => {
+              return (
+                <Marker
+                  key={hotspot.id}
+                  coordinate={{
+                    latitude: hotspot.position.geopoint.latitude,
+                    longitude: hotspot.position.geopoint.longitude,
+                  }}
+                />
+              );
+            });
+            setMarkerState(markers);
+          })
+          .catch((error) => {
+            alert(error);
+          });
       },
       (error) => {
         alert(error);
-        //getLocation();
+        getLocation();
       },
       {
         enableHighAccuracy: false,
@@ -413,7 +456,9 @@ export default function PlayersMap() {
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
-        />
+        >
+          {markerState}
+        </MapView>
         <View
           style={{
             position: "absolute",
