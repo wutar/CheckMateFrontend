@@ -24,7 +24,7 @@ export const LocationProvider = (props) => {
     const hotspots = firebase.firestore().collection("hotspots");
     const geo = geofirex.init(firebase);
     const center = geo.point(lat, long);
-    const radius = 10; // query hotspots in a radius of 5 km
+    const radius = 5; // query hotspots in a radius of 5 km
     const query = geo.query(hotspots).within(center, radius, "position");
     const items = geofirex.get(query);
     return items;

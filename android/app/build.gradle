@@ -185,6 +185,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:+'
     
     implementation fileTree(dir: "libs", include: ["*.jar"])
+        implementation project(':react-native-splash-screen')
+
     implementation("com.facebook.react:react-native:+")  // From node_modules
     addUnimodulesDependencies()
 

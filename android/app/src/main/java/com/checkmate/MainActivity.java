@@ -4,6 +4,8 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import org.devio.rn.splashscreen.SplashScreen; // here
+
 
 public class MainActivity extends ReactActivity {
 
@@ -18,6 +20,7 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
+        SplashScreen.show(this);
         return new ReactActivityDelegate(this, getMainComponentName()) {
             @Override
             protected ReactRootView createRootView() {
