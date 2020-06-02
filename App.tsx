@@ -5,6 +5,7 @@ import { LocationProvider } from "./Contexts/LocationContext";
 
 import CheckMate from "./HOC/CheckMate";
 import { decode, encode } from "base-64";
+import { YellowBox } from "react-native";
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -13,7 +14,7 @@ if (!global.btoa) {
 if (!global.atob) {
   global.atob = decode;
 }
-console.ignoredYellowBox = ["Setting a timer"];
+YellowBox.ignoreWarnings(["Setting a timer"]);
 
 export default function App() {
   return (

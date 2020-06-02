@@ -363,22 +363,6 @@ export default function PlayersMap() {
   const [markerState, setMarkerState] = useState<Array<JSX.Element>>([]);
   const [hotspots, setHotspots] = useState<Array<Hotspot>>([]);
   const location: LocationContextProps = useContext(LocationContext);
-  const getMarkers = (): Array<JSX.Element> => {
-    const markers = hotspots.map((hotspot) => {
-      return (
-        <Marker
-          key={hotspot.id}
-          coordinate={{
-            latitude: hotspot.position.geopoint.latitude,
-            longitude: hotspot.position.geopoint.latitude,
-          }}
-        />
-      );
-      return markers;
-    });
-
-    return markers;
-  };
   const getLocation = (): void => {
     Geolocation.watchPosition(
       // Will give you the current location
