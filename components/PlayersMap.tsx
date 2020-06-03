@@ -6,9 +6,11 @@ import {
   Text,
   View,
   Dimensions,
+  Image,
   PermissionsAndroid,
   Button,
 } from "react-native";
+const pagoda = require("./img/pagoda.png"); //from game-icons.net
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   LocationContextProps,
@@ -342,6 +344,10 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
+  image: {
+    height: 60,
+    width: 60,
+  },
 });
 
 interface Hotspot {
@@ -363,67 +369,27 @@ export default function PlayersMap() {
   const [markerState, setMarkerState] = useState<Array<JSX.Element>>([]);
   const [hotspots, setHotspots] = useState<Array<Hotspot>>([]);
   const location: LocationContextProps = useContext(LocationContext);
-  const getLocation = (): void => {
-    Geolocation.watchPosition(
-      // Will give you the current location
-      (position) => {
-        setCurrentLongitude(position.coords.longitude);
-        // getting the Longitude from the location json
-        setCurrentLatitude(position.coords.latitude);
-        // getting the Latitude from the location json
-        location
-          .getNearHotspots(position.coords.latitude, position.coords.longitude)
-          .then((hotspotsFromQuery) => {
-            setHotspots(hotspotsFromQuery);
-            const markers = hotspotsFromQuery.map((hotspot) => {
-              return (
-                <Marker
-                  key={hotspot.id}
-                  coordinate={{
-                    latitude: hotspot.position.geopoint.latitude,
-                    longitude: hotspot.position.geopoint.longitude,
-                  }}
-                />
-              );
-            });
-            setMarkerState(markers);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      },
-      (error) => {
-        alert(error);
-        getLocation();
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
-        maximumAge: 1000 * 60 * 15, // 15min
-      }
-    );
+
+  const getMarkers = (): Array<JSX.Element> => {
+    const markers = location.hotspots.map((hotspot) => {
+      return (
+        <Marker
+          key={hotspot.id}
+          coordinate={{
+            latitude: hotspot.position.geopoint.latitude,
+            longitude: hotspot.position.geopoint.longitude,
+          }}
+        >
+          <Image source={pagoda} style={styles.image} />
+        </Marker>
+      );
+    });
+    return markers;
   };
   useEffect(() => {
-    if (!locationEnabled) {
-      RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
-        (res) => {
-          if (!res.enabled) {
-            RNReactNativeLocationServicesSettings.askForEnabling((res) => {
-              if (res) {
-                setLocationEnabled(true);
-              }
-            });
-          } else {
-            setLocationEnabled(true);
-          }
-        }
-      );
-    } else {
-      getLocation();
-    }
     return () => {};
-  }, [locationEnabled, currentLatitude, currentLongitude]);
-  if (!(currentLatitude === 0 && currentLongitude === 0))
+  }, []);
+  if (!(location.currentLatitude === 0 && location.currentLongitude === 0))
     return (
       <View style={styles.mapContainer}>
         <MapView
@@ -435,13 +401,13 @@ export default function PlayersMap() {
           scrollEnabled={true}
           zoomEnabled={true}
           initialRegion={{
-            latitude: currentLatitude,
-            longitude: currentLongitude,
+            latitude: location.currentLatitude,
+            longitude: location.currentLongitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
         >
-          {markerState}
+          {getMarkers()}
         </MapView>
         <View
           style={{
