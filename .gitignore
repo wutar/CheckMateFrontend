@@ -60,3 +60,6 @@ buck-out/
 
 # Expo
 .expo/*
+
+#heap profiling files 
+*.hprof
