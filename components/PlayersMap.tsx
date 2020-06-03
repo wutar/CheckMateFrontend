@@ -363,11 +363,6 @@ interface Hotspot {
 }
 
 export default function PlayersMap() {
-  const [currentLongitude, setCurrentLongitude] = useState(0);
-  const [currentLatitude, setCurrentLatitude] = useState(0);
-  const [locationEnabled, setLocationEnabled] = useState(false);
-  const [markerState, setMarkerState] = useState<Array<JSX.Element>>([]);
-  const [hotspots, setHotspots] = useState<Array<Hotspot>>([]);
   const location: LocationContextProps = useContext(LocationContext);
 
   const getMarkers = (): Array<JSX.Element> => {

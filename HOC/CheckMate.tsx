@@ -5,6 +5,7 @@ import Swiper from "react-native-swiper";
 import PlayersMap from "../components/PlayersMap";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
 import AuthorizationApp from "../components/auth/AuthorizationApp";
+import PlayersList from "../components/PlayersList";
 
 function GamesOverview() {
   return (
@@ -41,11 +42,11 @@ export default function CheckMate() {
         showsPagination={false}
         loop={false}
       >
-        <GamesOverview />
+        <PlayersList />
         <PlayersMap />
         <PlayerStats />
       </Swiper>
-      <ButtonGroup buttons={buttons} onPress={updateIndex} />
+      <ButtonGroup buttons={buttons} onPress={(index) => updateIndex(index)} />
     </>
   ) : (
     <AuthorizationApp />

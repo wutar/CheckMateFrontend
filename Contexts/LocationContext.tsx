@@ -16,6 +16,7 @@ export interface LocationContextProps {
   currentLongitude: number;
   currentLatitude: number;
   hotspots: Array<Hotspot>;
+  nearUsers: Array<User>;
 }
 
 interface Hotspot {
@@ -30,13 +31,28 @@ interface Hotspot {
   };
 }
 
+interface User {
+  hitMetadata: {
+    distance: number;
+    bearing: number;
+  };
+  name: string;
+  position: {
+    geohash: string;
+    geopoint: {
+      longitude: number;
+      latitude: number;
+    };
+  };
+}
+
 export const LocationContext = createContext({} as LocationContextProps);
 export const LocationProvider = (props) => {
   const [currentLongitude, setCurrentLongitude] = useState(0);
   const [currentLatitude, setCurrentLatitude] = useState(0);
   const [locationEnabled, setLocationEnabled] = useState(false);
-  const [markerState, setMarkerState] = useState<Array<JSX.Element>>([]);
   const [hotspots, setHotspots] = useState<Array<Hotspot>>([]);
+  const [nearUsers, setNearUsers] = useState<Array<User>>([]);
 
   const auth: AuthContextProps = useContext(AuthContext);
   if (firebase.apps.length === 0) {
@@ -79,8 +95,8 @@ export const LocationProvider = (props) => {
     radius: number
   ): Promise<any> => {
     const users = firebase.firestore().collection("users");
-    const center = geo.point(lat, long);
-    const query = geo.query(users).within(center, radius, "position");
+    const center = geo.point(currentLatitude, currentLongitude);
+    const query = geo.query(users).within(center, radius, "location");
     const items = geofirex.get(query);
     return items;
   };
@@ -122,6 +138,13 @@ export const LocationProvider = (props) => {
             alert(error);
           });
         exposeLocation(currentLatitude, currentLongitude);
+        getNearUsers(currentLatitude, currentLongitude, 5)
+          .then((usersFromQuery) => {
+            setNearUsers(usersFromQuery);
+          })
+          .catch((error) => {
+            alert(error);
+          });
       }
     }
     return () => {};
@@ -135,6 +158,7 @@ export const LocationProvider = (props) => {
         currentLatitude,
         currentLongitude,
         hotspots,
+        nearUsers,
       }}
     >
       {props.children}
