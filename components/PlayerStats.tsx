@@ -1,8 +1,16 @@
 import React, { useContext } from "react";
 import { LocationContext } from "../Contexts/LocationContext";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Button } from "react-native-elements";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Linking,
+} from "react-native";
+import { Button, withTheme } from "react-native-elements";
+const info = require("./img/info.png");
 
 interface PlayerStatsProps {
   username: string;
@@ -45,10 +53,25 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   logoutButton: {
-    position: "absolute",
+    flexDirection: "row",
+    backgroundColor: "#23F5A0",
     justifyContent: "flex-end",
-    height: 20,
-    bottom: 0,
+    marginTop: 60,
+    height: 40,
+
+    alignItems: "center",
+    alignContent: "center",
+    width: "100%",
+  },
+  logoutButtonText: {
+    flex: 1,
+    color: "white",
+    textAlign: "center",
+    width: 50,
+    marginHorizontal: "auto",
+    textTransform: "uppercase",
+    fontSize: 23,
+    alignSelf: "center",
   },
   discipline: {
     display: "flex",
@@ -68,12 +91,20 @@ const styles = StyleSheet.create({
     display: "flex",
     width: "50%",
   },
+  infoButton: {
+    marginLeft: "50%",
+    top: 10,
+    width: 30,
+    height: 30,
+  },
 });
 
 function Discipline(props: {
   name: string;
   level: number;
   onChallenge: () => void;
+  isLoggedInUser: () => boolean;
+  infoLink: string;
 }): JSX.Element {
   return (
     <View style={styles.discipline}>
@@ -81,13 +112,18 @@ function Discipline(props: {
         <Text style={styles.disciplineName}>{props.name}</Text>
         <Text style={styles.level}>Lv. {props.level}</Text>
       </View>
-
-      <TouchableOpacity
-        style={styles.challengeButton}
-        onPress={() => props.onChallenge()}
-      >
-        <Text style={styles.challengeButtonText}>Challenge </Text>
-      </TouchableOpacity>
+      {!props.isLoggedInUser ? (
+        <TouchableOpacity
+          style={styles.challengeButton}
+          onPress={() => props.onChallenge()}
+        >
+          <Text style={styles.challengeButtonText}>Challenge </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={() => Linking.openURL(props.infoLink)}>
+          <Image style={styles.infoButton} source={info} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -100,24 +136,35 @@ export default function PlayerStats(props: PlayerStatsProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.h1}> {props.username} </Text>
-      <Discipline name="Go" level={0} onChallenge={() => alert("Challenge")} />
       <Discipline
+        infoLink="https://www.britgo.org/intro/intro2.html"
+        isLoggedInUser={isLoggedInUser}
+        name="Go"
+        level={0}
+        onChallenge={() => alert("Challenge")}
+      />
+      <Discipline
+        infoLink="https://www.chess.com/learn-how-to-play-chess"
+        isLoggedInUser={isLoggedInUser}
         name="Chess"
         level={0}
         onChallenge={() => alert("Challenge")}
       />
       <Discipline
+        infoLink="https://www.filiphofer.com/en/american-checkers-rules/"
+        isLoggedInUser={isLoggedInUser}
         name="Checkers"
         level={0}
         onChallenge={() => alert("Challenge")}
       />
 
       {isLoggedInUser() && (
-        <Button
+        <TouchableOpacity
           style={styles.logoutButton}
-          title="Logout"
           onPress={() => auth.logout()}
-        />
+        >
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
