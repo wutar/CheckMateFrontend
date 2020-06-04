@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
   infoButton: {
     marginLeft: "50%",
     top: 10,
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
   },
 });
 
@@ -103,7 +103,7 @@ function Discipline(props: {
   name: string;
   level: number;
   onChallenge: () => void;
-  isLoggedInUser: () => boolean;
+  isLoggedInUser: boolean;
   infoLink: string;
 }): JSX.Element {
   return (
@@ -138,21 +138,21 @@ export default function PlayerStats(props: PlayerStatsProps) {
       <Text style={styles.h1}> {props.username} </Text>
       <Discipline
         infoLink="https://www.britgo.org/intro/intro2.html"
-        isLoggedInUser={isLoggedInUser}
+        isLoggedInUser={isLoggedInUser()}
         name="Go"
         level={0}
         onChallenge={() => alert("Challenge")}
       />
       <Discipline
         infoLink="https://www.chess.com/learn-how-to-play-chess"
-        isLoggedInUser={isLoggedInUser}
+        isLoggedInUser={isLoggedInUser()}
         name="Chess"
         level={0}
         onChallenge={() => alert("Challenge")}
       />
       <Discipline
         infoLink="https://www.filiphofer.com/en/american-checkers-rules/"
-        isLoggedInUser={isLoggedInUser}
+        isLoggedInUser={isLoggedInUser()}
         name="Checkers"
         level={0}
         onChallenge={() => alert("Challenge")}
