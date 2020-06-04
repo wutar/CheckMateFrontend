@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { LocationContext } from "../Contexts/LocationContext";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Button } from "react-native-elements";
 
 interface PlayerStatsProps {
@@ -33,11 +33,15 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   name: {
+    fontSize: 30,
+    color: "#ffffff",
+  },
+  disciplineName: {
     fontSize: 25,
     color: "#ffffff",
   },
   level: {
-    fontSize: 25,
+    fontSize: 18,
     color: "#ffffff",
   },
   logoutButton: {
@@ -47,30 +51,74 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   discipline: {
+    display: "flex",
+    flexDirection: "row",
     padding: 20,
+  },
+  challengeButton: {
+    display: "flex",
+    backgroundColor: "white",
+    height: 50,
+  },
+  challengeButtonText: {
+    marginTop: 7,
+    fontSize: 25,
+  },
+  left: {
+    display: "flex",
+    width: "50%",
   },
 });
 
+function Discipline(props: {
+  name: string;
+  level: number;
+  onChallenge: () => void;
+}): JSX.Element {
+  return (
+    <View style={styles.discipline}>
+      <View style={styles.left}>
+        <Text style={styles.disciplineName}>{props.name}</Text>
+        <Text style={styles.level}>Lv. {props.level}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.challengeButton}
+        onPress={() => props.onChallenge()}
+      >
+        <Text style={styles.challengeButtonText}>Challenge </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 export default function PlayerStats(props: PlayerStatsProps) {
   const auth: AuthContextProps = useContext(AuthContext);
+  const isLoggedInUser = (): boolean => {
+    return props.username == auth.user?.displayName;
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.h1}> {props.username} </Text>
-      <View style={styles.discipline}>
-        <Text style={styles.level}>Go: Lv. {props.goLevel}</Text>
-      </View>
-      <View style={styles.discipline}>
-        <Text style={styles.level}>Chess: Lv. {props.chessLevel}</Text>
-      </View>
-      <View style={styles.discipline}>
-        <Text style={styles.level}>Checkers: Lv. {props.checkersLevel}</Text>
-      </View>
-      <Button
-        style={styles.logoutButton}
-        title="Logout"
-        onPress={() => auth.logout()}
+      <Discipline name="Go" level={0} onChallenge={() => alert("Challenge")} />
+      <Discipline
+        name="Chess"
+        level={0}
+        onChallenge={() => alert("Challenge")}
       />
+      <Discipline
+        name="Checkers"
+        level={0}
+        onChallenge={() => alert("Challenge")}
+      />
+
+      {isLoggedInUser() && (
+        <Button
+          style={styles.logoutButton}
+          title="Logout"
+          onPress={() => auth.logout()}
+        />
+      )}
     </View>
   );
 }

@@ -37,6 +37,10 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
   },
+  overlay: {
+    width: "80%",
+    height: "80%",
+  },
 });
 
 interface User {
@@ -95,6 +99,7 @@ export default function PlayersList(props: PlayersListProps) {
       </Text>
       {getUsers()}
       <Overlay
+        overlayStyle={styles.overlay}
         isVisible={selectedUser.name !== ""}
         onBackdropPress={() =>
           setSelectedUser({
