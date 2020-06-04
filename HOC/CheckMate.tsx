@@ -50,6 +50,9 @@ const styles = StyleSheet.create({
     width: 60,
     marginHorizontal: 20,
   },
+  selectedButton: {
+    backgroundColor: "#23F5A0",
+  },
 });
 
 export default function CheckMate() {
@@ -83,6 +86,7 @@ export default function CheckMate() {
         onPress={(index) => {
           updateIndex(index);
         }}
+        selectedButtonStyle={styles.selectedButton}
       />
     );
   };

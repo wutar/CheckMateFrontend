@@ -5,9 +5,10 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { Text } from "react-native-elements";
+import { Text, Overlay } from "react-native-elements";
 import { LocationContext } from "../Contexts/LocationContext";
-import React, { useContext, Fragment } from "react";
+import React, { useContext, Fragment, useState } from "react";
+import PlayerStats from "./PlayerStats";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -38,16 +39,45 @@ const styles = StyleSheet.create({
   },
 });
 
+interface User {
+  hitMetadata: {
+    distance: number;
+    bearing: number;
+  };
+  name: string;
+  position: {
+    geohash: string;
+    geopoint: {
+      longitude: number;
+      latitude: number;
+    };
+  };
+}
+
 interface PlayersListProps {}
 export default function PlayersList(props: PlayersListProps) {
   const location = useContext(LocationContext);
+  const [selectedUser, setSelectedUser] = useState<User>({
+    hitMetadata: {
+      distance: 0,
+      bearing: 0,
+    },
+    name: "",
+    position: {
+      geohash: "",
+      geopoint: {
+        longitude: 0,
+        latitude: 0,
+      },
+    },
+  });
   const getUsers = (): Array<JSX.Element> => {
     const userListItems = location.nearUsers.map((user) => {
       return (
         <TouchableOpacity
           key={user.name}
           style={styles.user}
-          onPress={() => alert(user.name)}
+          onPress={() => setSelectedUser(user)}
         >
           <Text style={styles.name}>{user.name}</Text>
           <Text style={styles.distance}>
@@ -64,6 +94,32 @@ export default function PlayersList(props: PlayersListProps) {
         Nearby users
       </Text>
       {getUsers()}
+      <Overlay
+        isVisible={selectedUser.name !== ""}
+        onBackdropPress={() =>
+          setSelectedUser({
+            hitMetadata: {
+              distance: 0,
+              bearing: 0,
+            },
+            name: "",
+            position: {
+              geohash: "",
+              geopoint: {
+                longitude: 0,
+                latitude: 0,
+              },
+            },
+          })
+        }
+      >
+        <PlayerStats
+          username={selectedUser.name}
+          goLevel={0}
+          checkersLevel={0}
+          chessLevel={0}
+        />
+      </Overlay>
     </View>
   );
 }

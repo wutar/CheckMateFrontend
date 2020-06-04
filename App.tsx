@@ -1,3 +1,5 @@
+import "react-native-gesture-handler";
+
 import React, { Fragment, useEffect } from "react";
 
 import { AuthProvider } from "./Contexts/AuthContext";
