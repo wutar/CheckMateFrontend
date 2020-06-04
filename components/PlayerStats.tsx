@@ -58,13 +58,13 @@ export default function PlayerStats(props: PlayerStatsProps) {
     <View style={styles.container}>
       <Text style={styles.h1}> {props.username} </Text>
       <View style={styles.discipline}>
-        <Text style={styles.level}>Go: {props.goLevel}</Text>
+        <Text style={styles.level}>Go: Lv. {props.goLevel}</Text>
       </View>
       <View style={styles.discipline}>
-        <Text style={styles.level}>Chess: {props.chessLevel}</Text>
+        <Text style={styles.level}>Chess: Lv. {props.chessLevel}</Text>
       </View>
       <View style={styles.discipline}>
-        <Text style={styles.level}>Checkers: {props.checkersLevel}</Text>
+        <Text style={styles.level}>Checkers: Lv. {props.checkersLevel}</Text>
       </View>
       <Button
         style={styles.logoutButton}

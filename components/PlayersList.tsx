@@ -37,7 +37,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
-export default function PlayersList() {
+
+interface PlayersListProps {}
+export default function PlayersList(props: PlayersListProps) {
   const location = useContext(LocationContext);
   const getUsers = (): Array<JSX.Element> => {
     const userListItems = location.nearUsers.map((user) => {

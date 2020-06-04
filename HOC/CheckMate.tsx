@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { Text, View, Button } from "react-native";
+import { Text, View, Button, StyleSheet, Dimensions } from "react-native";
 import { ButtonGroup, ElementObject, Input } from "react-native-elements";
 import Swiper from "react-native-swiper";
 import PlayersMap from "../components/PlayersMap";
@@ -8,24 +8,23 @@ import AuthorizationApp from "../components/auth/AuthorizationApp";
 import PlayersList from "../components/PlayersList";
 import PlayerStats from "../components/PlayerStats";
 
-function GamesOverview() {
-  return (
-    <View>
-      <Text> Games of Player</Text>
-    </View>
-  );
-}
-/*
-function PlayerStats() {
-  const auth: AuthContextProps = useContext(AuthContext);
-
-  return (
-    <View>
-      <Text> Your stats </Text>
-      <Button title="Logout" onPress={() => auth.logout()} />
-    </View>
-  );
-}*/
+const windowHeight = Dimensions.get("window").height - 240;
+const styles = StyleSheet.create({
+  mainContainer: {
+    marginBottom: 20,
+    paddingBottom: 1000,
+    height: windowHeight,
+  },
+  floatingButtons: {
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+    borderRadius: 10,
+  },
+});
 
 export default function CheckMate() {
   const [selectedIndex, setSelectedIndex] = useState(1);
@@ -33,6 +32,17 @@ export default function CheckMate() {
   const buttons = ["ToGames", "ToMap", "ToStats"];
   const updateIndex = (index) => {
     swiper.current?.scrollTo(index);
+  };
+  const navigatorButtons = (): JSX.Element => {
+    return (
+      <ButtonGroup
+        containerStyle={styles.floatingButtons}
+        buttons={buttons}
+        onPress={(index) => {
+          updateIndex(index);
+        }}
+      />
+    );
   };
   const auth: AuthContextProps = useContext(AuthContext);
   return auth.user ? (
@@ -42,6 +52,7 @@ export default function CheckMate() {
         ref={swiper}
         showsPagination={false}
         loop={false}
+        style={styles.mainContainer}
       >
         <PlayersList />
         <PlayersMap />
@@ -52,13 +63,7 @@ export default function CheckMate() {
           checkersLevel={0}
         />
       </Swiper>
-      <ButtonGroup
-        buttons={buttons}
-        onPress={(index) => {
-          alert("yeer");
-          updateIndex(index);
-        }}
-      />
+      {navigatorButtons()}
     </>
   ) : (
     <AuthorizationApp />

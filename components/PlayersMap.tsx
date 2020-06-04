@@ -1,22 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import Geolocation from "@react-native-community/geolocation";
-import RNReactNativeLocationServicesSettings from "react-native-location-services-settings";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  Image,
-  PermissionsAndroid,
-  Button,
-} from "react-native";
+import React, { useEffect, useContext } from "react";
+import { StyleSheet, Text, View, Dimensions, Image } from "react-native";
 const pagoda = require("./img/pagoda.png"); //from game-icons.net
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   LocationContextProps,
   LocationContext,
 } from "../Contexts/LocationContext";
-import { GeoQueryDocument } from "geofirex";
 
 const mapStylesJSON = [
   {
@@ -349,18 +338,6 @@ const styles = StyleSheet.create({
     width: 60,
   },
 });
-
-interface Hotspot {
-  hitMetaData: object;
-  id: number;
-  position: {
-    geohash: string;
-    geopoint: {
-      longitude: number;
-      latitude: number;
-    };
-  };
-}
 
 export default function PlayersMap() {
   const location: LocationContextProps = useContext(LocationContext);
