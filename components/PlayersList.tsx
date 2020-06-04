@@ -1,4 +1,10 @@
-import { ListView, FlatList, StyleSheet, View } from "react-native";
+import {
+  ListView,
+  FlatList,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { Text } from "react-native-elements";
 import { LocationContext } from "../Contexts/LocationContext";
 import React, { useContext, Fragment } from "react";
@@ -20,19 +26,32 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 15,
+    color: "#ffffff",
+  },
+  name: {
     fontSize: 25,
     color: "#ffffff",
   },
-  distance: {},
+  distance: {
+    color: "#ffffff",
+    fontSize: 15,
+  },
 });
 export default function PlayersList() {
   const location = useContext(LocationContext);
   const getUsers = (): Array<JSX.Element> => {
     const userListItems = location.nearUsers.map((user) => {
       return (
-        <Text key={user.name} style={styles.user}>
-          {user.name} {user.hitMetadata.distance.toFixed(3)} km
-        </Text>
+        <TouchableOpacity
+          key={user.name}
+          style={styles.user}
+          onPress={() => alert(user.name)}
+        >
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.distance}>
+            {user.hitMetadata.distance.toFixed(3)} km
+          </Text>
+        </TouchableOpacity>
       );
     });
     return userListItems;

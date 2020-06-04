@@ -6,6 +6,7 @@ import PlayersMap from "../components/PlayersMap";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
 import AuthorizationApp from "../components/auth/AuthorizationApp";
 import PlayersList from "../components/PlayersList";
+import PlayerStats from "../components/PlayerStats";
 
 function GamesOverview() {
   return (
@@ -14,7 +15,7 @@ function GamesOverview() {
     </View>
   );
 }
-
+/*
 function PlayerStats() {
   const auth: AuthContextProps = useContext(AuthContext);
 
@@ -24,7 +25,7 @@ function PlayerStats() {
       <Button title="Logout" onPress={() => auth.logout()} />
     </View>
   );
-}
+}*/
 
 export default function CheckMate() {
   const [selectedIndex, setSelectedIndex] = useState(1);
@@ -44,9 +45,20 @@ export default function CheckMate() {
       >
         <PlayersList />
         <PlayersMap />
-        <PlayerStats />
+        <PlayerStats
+          username={auth.user.displayName!}
+          goLevel={0}
+          chessLevel={0}
+          checkersLevel={0}
+        />
       </Swiper>
-      <ButtonGroup buttons={buttons} onPress={(index) => updateIndex(index)} />
+      <ButtonGroup
+        buttons={buttons}
+        onPress={(index) => {
+          alert("yeer");
+          updateIndex(index);
+        }}
+      />
     </>
   ) : (
     <AuthorizationApp />
