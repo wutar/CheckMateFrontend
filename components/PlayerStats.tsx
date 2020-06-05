@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { LocationContext } from "../Contexts/LocationContext";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
 import {
   View,
@@ -9,7 +8,6 @@ import {
   Image,
   Linking,
 } from "react-native";
-import { Button, withTheme } from "react-native-elements";
 const info = require("./img/info.png");
 
 interface PlayerStatsProps {
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#23F5A0",
     justifyContent: "flex-end",
     marginTop: 60,
-    height: 40,
+    height: 50,
 
     alignItems: "center",
     alignContent: "center",
@@ -80,10 +78,11 @@ const styles = StyleSheet.create({
   },
   challengeButton: {
     display: "flex",
-    backgroundColor: "white",
+    backgroundColor: "#23F5A0",
     height: 50,
   },
   challengeButtonText: {
+    color: "white",
     marginTop: 7,
     fontSize: 25,
   },
