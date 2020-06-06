@@ -2,9 +2,10 @@ import React, { createContext, useState, useEffect } from "react";
 import * as firebase from "@react-native-firebase/app";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import { User } from "../base-types";
 
 export interface AuthContextProps {
-  user: FirebaseAuthTypes.User | null;
+  user: User | null;
   register: (password: string, email: string, username: string) => void;
   login: (password: string, email: string) => void;
   logout: () => void;
@@ -14,7 +15,7 @@ export interface AuthContextProps {
 export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthProvider = (props) => {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>("");
 
   const register = (password: string, email: string, username: string) => {
@@ -24,9 +25,13 @@ export const AuthProvider = (props) => {
         await data.user.updateProfile({
           displayName: username,
         });
-        firestore()
-          .collection("users")
-          .add({ email: email.toLowerCase(), name: username });
+        firestore().collection("users").add({
+          email: email.toLowerCase(),
+          name: username,
+          goLevel: 0,
+          chessLevel: 0,
+          checkersLevel: 0,
+        });
       })
       .catch((error) => {
         switch (error.code) {
@@ -67,7 +72,16 @@ export const AuthProvider = (props) => {
 
   useEffect(() => {
     auth().onAuthStateChanged((userState) => {
-      setUser(userState);
+      if (userState?.email) {
+        firestore()
+          .collection("users")
+          .where("email", "==", userState!.email)
+          .get()
+          .then((snapshot) => {
+            setUser(snapshot.docs[0].data() as User);
+          })
+          .catch((e) => setUser(null));
+      }
     });
   }, []);
 

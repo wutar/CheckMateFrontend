@@ -9,6 +9,7 @@ import CheckMate from "./HOC/CheckMate";
 import { decode, encode } from "base-64";
 import { YellowBox } from "react-native";
 import SplashScreen from "react-native-splash-screen";
+import { ChallengesProvider } from "./Contexts/ChallengesContext";
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -26,7 +27,9 @@ export default function App() {
   return (
     <AuthProvider>
       <LocationProvider>
-        <CheckMate />
+        <ChallengesProvider>
+          <CheckMate />
+        </ChallengesProvider>
       </LocationProvider>
     </AuthProvider>
   );

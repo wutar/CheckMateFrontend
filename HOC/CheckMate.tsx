@@ -102,12 +102,7 @@ export default function CheckMate() {
       >
         <PlayersList />
         <PlayersMap />
-        <PlayerStats
-          username={auth.user.displayName!}
-          goLevel={0}
-          chessLevel={0}
-          checkersLevel={0}
-        />
+        <PlayerStats {...auth.user} />
       </Swiper>
       {navigatorButtons()}
     </>

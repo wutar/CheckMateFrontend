@@ -8,14 +8,13 @@ import {
   Image,
   Linking,
 } from "react-native";
+import {
+  ChallengesContextProps,
+  ChallengesContext,
+} from "../Contexts/ChallengesContext";
+import { User } from "../base-types";
 const info = require("./img/info.png");
 
-interface PlayerStatsProps {
-  username: string;
-  goLevel: number;
-  checkersLevel: number;
-  chessLevel: number;
-}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -126,35 +125,36 @@ function Discipline(props: {
     </View>
   );
 }
-export default function PlayerStats(props: PlayerStatsProps) {
+export default function PlayerStats(props: User) {
   const auth: AuthContextProps = useContext(AuthContext);
+  const challenges: ChallengesContextProps = useContext(ChallengesContext);
   const isLoggedInUser = (): boolean => {
-    return props.username == auth.user?.displayName;
+    return props.name == auth.user?.name;
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.h1}> {props.username} </Text>
+      <Text style={styles.h1}> {props.name} </Text>
       <Discipline
         infoLink="https://www.britgo.org/intro/intro2.html"
         isLoggedInUser={isLoggedInUser()}
         name="Go"
         level={0}
-        onChallenge={() => alert("Challenge")}
+        onChallenge={() => challenges.createChallenge(props.email, "Go")}
       />
       <Discipline
         infoLink="https://www.chess.com/learn-how-to-play-chess"
         isLoggedInUser={isLoggedInUser()}
         name="Chess"
         level={0}
-        onChallenge={() => alert("Challenge")}
+        onChallenge={() => challenges.createChallenge(props.email, "Chess")}
       />
       <Discipline
         infoLink="https://www.filiphofer.com/en/american-checkers-rules/"
         isLoggedInUser={isLoggedInUser()}
         name="Checkers"
         level={0}
-        onChallenge={() => alert("Challenge")}
+        onChallenge={() => challenges.createChallenge(props.email, "Checkers")}
       />
 
       {isLoggedInUser() && (

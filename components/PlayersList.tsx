@@ -6,9 +6,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Text, Overlay } from "react-native-elements";
-import { LocationContext } from "../Contexts/LocationContext";
+import {
+  LocationContext,
+  LocationContextProps,
+} from "../Contexts/LocationContext";
 import React, { useContext, Fragment, useState } from "react";
 import PlayerStats from "./PlayerStats";
+import {
+  ChallengesContextProps,
+  ChallengesContext,
+} from "../Contexts/ChallengesContext";
+import { User } from "../base-types";
+import { AuthContextProps, AuthContext } from "../Contexts/AuthContext";
+import firebase from "firebase";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -43,43 +53,36 @@ const styles = StyleSheet.create({
   },
 });
 
-interface User {
-  hitMetadata: {
-    distance: number;
-    bearing: number;
-  };
-  name: string;
-  position: {
-    geohash: string;
-    geopoint: {
-      longitude: number;
-      latitude: number;
-    };
-  };
-}
-
 interface PlayersListProps {}
 export default function PlayersList(props: PlayersListProps) {
-  const location = useContext(LocationContext);
-  const [selectedUser, setSelectedUser] = useState<User>({
-    hitMetadata: {
-      distance: 0,
-      bearing: 0,
-    },
-    name: "",
-    position: {
-      geohash: "",
-      geopoint: {
-        longitude: 0,
-        latitude: 0,
-      },
-    },
-  });
+  const auth: AuthContextProps = useContext(AuthContext);
+  const location: LocationContextProps = useContext(LocationContext);
+  const challenges: ChallengesContextProps = useContext(ChallengesContext);
+  const [selectedUser, setSelectedUser] = useState<User | null>();
   const getUsers = (): Array<JSX.Element> => {
     const userListItems = location.nearUsers.map((user) => {
       return (
         <TouchableOpacity
           key={user.name}
+          style={styles.user}
+          onPress={() => setSelectedUser(user)}
+        >
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.distance}>
+            {user.hitMetadata!.distance.toFixed(3)} km
+          </Text>
+        </TouchableOpacity>
+      );
+    });
+    return userListItems;
+  };
+
+  /* const getChallenges = (): Array<JSX.Element> => {
+    const userListItems = challenges.challenges.map((challenge) => {
+      const opponentName = challenge.challengedUser
+      return (
+        <TouchableOpacity
+          key={challenge.opponent}
           style={styles.user}
           onPress={() => setSelectedUser(user)}
         >
@@ -91,40 +94,22 @@ export default function PlayersList(props: PlayersListProps) {
       );
     });
     return userListItems;
-  };
+  };*/
   return (
     <View style={styles.container}>
       <Text h1 style={styles.h1}>
         Nearby users
       </Text>
       {getUsers()}
-      <Overlay
-        overlayStyle={styles.overlay}
-        isVisible={selectedUser.name !== ""}
-        onBackdropPress={() =>
-          setSelectedUser({
-            hitMetadata: {
-              distance: 0,
-              bearing: 0,
-            },
-            name: "",
-            position: {
-              geohash: "",
-              geopoint: {
-                longitude: 0,
-                latitude: 0,
-              },
-            },
-          })
-        }
-      >
-        <PlayerStats
-          username={selectedUser.name}
-          goLevel={0}
-          checkersLevel={0}
-          chessLevel={0}
-        />
-      </Overlay>
+      {selectedUser && (
+        <Overlay
+          overlayStyle={styles.overlay}
+          isVisible={selectedUser!.name !== ""}
+          onBackdropPress={() => setSelectedUser(null)}
+        >
+          <PlayerStats {...selectedUser} />
+        </Overlay>
+      )}
     </View>
   );
 }

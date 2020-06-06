@@ -3,19 +3,13 @@ import * as firebase from "@react-native-firebase/app";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { AuthContext, AuthContextProps } from "./AuthContext";
+import { Challenge } from "../base-types";
 
 export interface ChallengesContextProps {
   acceptChallenge(id: string): void;
   denyChallenge(id: string): void;
   createChallenge(opponent: string, discipline: string): void;
   challenges: Array<Challenge>;
-}
-interface Challenge {
-  discipline: string;
-  challenger: string;
-  challengedUser: string;
-  accepted: boolean;
-  started: boolean;
 }
 
 export const ChallengesContext = createContext({} as ChallengesContextProps);
@@ -47,16 +41,28 @@ export const ChallengesProvider = (props) => {
       });
   };
   useEffect(() => {
-    const subscriber = firestore();
-    /*.collection("challenges")
-      .where('challenger', '==', auth.user?.email)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docs.forEach( doc => {
-            setChallenges([...challenges, {doc.data])
-        })
-      });*/
-  }, []);
+    if (auth.user !== null) {
+      firestore()
+        .collection("challenges")
+        .where("challenger", "==", auth.user?.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            const challenge = doc.data() as Challenge;
+            setChallenges([...challenges, challenge]);
+          });
+        });
+      /* firestore()
+        .collection("challenges")
+        .where("challengedUser", "==", auth.user?.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            setChallenges([...challenges, (doc.data as unknown) as Challenge]);
+          });
+        });*/
+    }
+  }, [auth.user]);
 
   return (
     <ChallengesContext.Provider

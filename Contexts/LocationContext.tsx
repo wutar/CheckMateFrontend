@@ -9,6 +9,7 @@ import { GeoFireQuery, FirePoint } from "geofirex";
 import { Observable } from "rxjs";
 import Geolocation from "@react-native-community/geolocation";
 import RNReactNativeLocationServicesSettings from "react-native-location-services-settings";
+import { User, Hotspot } from "../base-types";
 
 export interface LocationContextProps {
   exposeLocation(lat: number, long: number): void;
@@ -17,33 +18,6 @@ export interface LocationContextProps {
   currentLatitude: number;
   hotspots: Array<Hotspot>;
   nearUsers: Array<User>;
-}
-
-interface Hotspot {
-  hitMetaData: object;
-  id: number;
-  position: {
-    geohash: string;
-    geopoint: {
-      longitude: number;
-      latitude: number;
-    };
-  };
-}
-
-interface User {
-  hitMetadata: {
-    distance: number;
-    bearing: number;
-  };
-  name: string;
-  position: {
-    geohash: string;
-    geopoint: {
-      longitude: number;
-      latitude: number;
-    };
-  };
 }
 
 export const LocationContext = createContext({} as LocationContextProps);
@@ -102,14 +76,17 @@ export const LocationProvider = (props) => {
   };
 
   const exposeLocation = async (lat: number, long: number) => {
-    const userDoc = (
-      await firebase
-        .firestore()
-        .collection("users")
-        .where("email", "==", auth.user!.email)
-        .get()
-    ).docs[0];
-    userDoc.ref.update({ location: geo.point(lat, long) });
+    const userDoc = firebase
+      .firestore()
+      .collection("users")
+      .where("email", "==", auth.user!.email)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docs[0].ref.update({ location: geo.point(lat, long) });
+      })
+      .catch((error) => {
+        //console.log(error);
+      });
   };
 
   useEffect(() => {
