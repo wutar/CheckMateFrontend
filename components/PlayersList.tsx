@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { Text, Overlay } from "react-native-elements";
 import {
@@ -29,6 +30,9 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     marginBottom: 20,
     marginLeft: 20,
+  },
+  usersList: {
+    marginBottom: 200,
   },
   user: {
     borderStyle: "solid",
@@ -98,7 +102,7 @@ export default function PlayersList(props: PlayersListProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text h1 style={styles.h1}>
         Ongoing Challenges
       </Text>
@@ -106,7 +110,7 @@ export default function PlayersList(props: PlayersListProps) {
       <Text h1 style={styles.h1}>
         Nearby users
       </Text>
-      {getUsers()}
+      <View style={styles.usersList}>{getUsers()}</View>
       {selectedUser && (
         <Overlay
           overlayStyle={styles.overlay}
@@ -116,6 +120,6 @@ export default function PlayersList(props: PlayersListProps) {
           <PlayerStats {...selectedUser} />
         </Overlay>
       )}
-    </View>
+    </ScrollView>
   );
 }
