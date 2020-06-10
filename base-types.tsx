@@ -15,10 +15,12 @@ export interface GeoPoint {
   longitude: number;
   latitude: number;
 }
+
 export interface Position {
   geohash: string;
   geopoint: GeoPoint;
 }
+
 export interface User {
   email: string;
   goLevel: number;

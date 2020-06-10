@@ -77,26 +77,32 @@ export default function PlayersList(props: PlayersListProps) {
     return userListItems;
   };
 
-  /* const getChallenges = (): Array<JSX.Element> => {
+  const getChallenges = (): Array<JSX.Element> => {
     const userListItems = challenges.challenges.map((challenge) => {
-      const opponentName = challenge.challengedUser
+      const opponent: User =
+        challenge.challengedUser?.email == auth.user!.email
+          ? challenge.challenger
+          : challenge.challengedUser;
       return (
         <TouchableOpacity
-          key={challenge.opponent}
+          key={opponent.email + challenge.discipline}
           style={styles.user}
-          onPress={() => setSelectedUser(user)}
         >
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.distance}>
-            {user.hitMetadata.distance.toFixed(3)} km
-          </Text>
+          <Text style={styles.name}>{opponent.name}</Text>
+          <Text style={styles.name}>{challenge.discipline}</Text>
+          <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
         </TouchableOpacity>
       );
     });
     return userListItems;
-  };*/
+  };
+
   return (
     <View style={styles.container}>
+      <Text h1 style={styles.h1}>
+        Ongoing Challenges
+      </Text>
+      {getChallenges()}
       <Text h1 style={styles.h1}>
         Nearby users
       </Text>

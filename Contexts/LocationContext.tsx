@@ -76,17 +76,19 @@ export const LocationProvider = (props) => {
   };
 
   const exposeLocation = async (lat: number, long: number) => {
-    const userDoc = firebase
-      .firestore()
-      .collection("users")
-      .where("email", "==", auth.user!.email)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docs[0].ref.update({ location: geo.point(lat, long) });
-      })
-      .catch((error) => {
-        //console.log(error);
-      });
+    if (auth.user) {
+      const userDoc = firebase
+        .firestore()
+        .collection("users")
+        .where("email", "==", auth.user?.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs[0].ref.update({ location: geo.point(lat, long) });
+        })
+        .catch((error) => {
+          //console.log(error);
+        });
+    }
   };
 
   useEffect(() => {
@@ -125,7 +127,7 @@ export const LocationProvider = (props) => {
       }
     }
     return () => {};
-  }, [currentLatitude, currentLongitude, locationEnabled]);
+  }, [currentLatitude, currentLongitude, locationEnabled, auth.user]);
 
   return (
     <LocationContext.Provider

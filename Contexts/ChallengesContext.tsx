@@ -3,12 +3,12 @@ import * as firebase from "@react-native-firebase/app";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { AuthContext, AuthContextProps } from "./AuthContext";
-import { Challenge } from "../base-types";
+import { Challenge, User } from "../base-types";
 
 export interface ChallengesContextProps {
   acceptChallenge(id: string): void;
   denyChallenge(id: string): void;
-  createChallenge(opponent: string, discipline: string): void;
+  createChallenge(opponent: User, discipline: string): void;
   challenges: Array<Challenge>;
 }
 
@@ -26,11 +26,11 @@ export const ChallengesProvider = (props) => {
     firestore().collection("challenges").doc(id).delete();
   };
 
-  const createChallenge = (opponent: string, discipline: string): void => {
+  const createChallenge = (opponent: User, discipline: string): void => {
     firestore()
       .collection("challenges")
       .add({
-        challenger: auth.user?.email,
+        challenger: auth.user,
         challengedUser: opponent,
         discipline: discipline,
         accepted: false,
@@ -41,28 +41,43 @@ export const ChallengesProvider = (props) => {
       });
   };
   useEffect(() => {
-    if (auth.user !== null) {
+    if (auth.user) {
       firestore()
         .collection("challenges")
-        .where("challenger", "==", auth.user?.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.docs.forEach((doc) => {
-            const challenge = doc.data() as Challenge;
-            setChallenges([...challenges, challenge]);
+        .where("challenger.email", "==", auth.user?.email)
+        .onSnapshot((snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            let challenge = doc.data() as Challenge;
+            if (
+              !challenges.some(
+                (c) =>
+                  c.challengedUser.email === challenge.challengedUser.email &&
+                  c.discipline === challenge.discipline
+              )
+            ) {
+              setChallenges([...challenges, challenge]);
+            }
           });
         });
-      /* firestore()
+      firestore()
         .collection("challenges")
-        .where("challengedUser", "==", auth.user?.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.docs.forEach((doc) => {
-            setChallenges([...challenges, (doc.data as unknown) as Challenge]);
+        .where("challengedUser.email", "==", auth.user?.email)
+        .onSnapshot((snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            let challenge = doc.data() as Challenge;
+            if (
+              !challenges.some(
+                (c) =>
+                  c.challenger.email === challenge.challenger.email &&
+                  c.discipline === challenge.discipline
+              )
+            ) {
+              setChallenges([...challenges, challenge]);
+            }
           });
-        });*/
+        });
     }
-  }, [auth.user]);
+  }, [auth.user, challenges]);
 
   return (
     <ChallengesContext.Provider
