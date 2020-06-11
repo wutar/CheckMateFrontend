@@ -7,6 +7,7 @@ import { Challenge, User } from "../base-types";
 
 export interface ChallengesContextProps {
   acceptChallenge(challenge: Challenge): void;
+  startChallenge(challenge: Challenge): void;
   denyChallenge(challenge: Challenge): void;
   createChallenge(opponent: User, discipline: string): void;
   challenges: Array<Challenge>;
@@ -18,6 +19,12 @@ export const ChallengesProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   const [challenges, setChallenges] = useState<Array<Challenge>>([]);
 
+  const startChallenge = (challenge: Challenge): void => {
+    firestore()
+      .collection("challenges")
+      .doc(challenge.id)
+      .update({ started: true });
+  };
   const acceptChallenge = (challenge: Challenge): void => {
     firestore()
       .collection("challenges")
@@ -88,7 +95,13 @@ export const ChallengesProvider = (props) => {
 
   return (
     <ChallengesContext.Provider
-      value={{ acceptChallenge, denyChallenge, createChallenge, challenges }}
+      value={{
+        startChallenge,
+        acceptChallenge,
+        denyChallenge,
+        createChallenge,
+        challenges,
+      }}
     >
       {props.children}
     </ChallengesContext.Provider>

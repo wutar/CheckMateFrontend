@@ -83,6 +83,47 @@ export default function PlayersList(props: PlayersListProps) {
 
   const getChallenges = (): Array<JSX.Element> => {
     const userListItems = challenges.challenges.map((challenge) => {
+      const getButtons = (): JSX.Element => {
+        if (challenge.started) {
+          return (
+            <View>
+              <TouchableOpacity
+                onPress={(e) => challenges.acceptChallenge(challenge)}
+              >
+                <Text style={styles.name}> I won! </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={(e) => challenges.denyChallenge(challenge)}
+              >
+                <Text style={styles.name}> I lost! </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }
+        if (challenge.accepted) {
+          return (
+            <TouchableOpacity
+              onPress={(e) => challenges.startChallenge(challenge)}
+            >
+              <Text style={styles.name}> Start </Text>
+            </TouchableOpacity>
+          );
+        }
+        return (
+          <View>
+            <TouchableOpacity
+              onPress={(e) => challenges.acceptChallenge(challenge)}
+            >
+              <Text style={styles.name}> accept </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={(e) => challenges.denyChallenge(challenge)}
+            >
+              <Text style={styles.name}> deny </Text>
+            </TouchableOpacity>
+          </View>
+        );
+      };
       const opponent: User =
         challenge.challengedUser?.email == auth.user!.email
           ? challenge.challenger
@@ -94,26 +135,7 @@ export default function PlayersList(props: PlayersListProps) {
             <Text style={styles.name}>{challenge.discipline}</Text>
             <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
           </View>
-          {!challenge.accepted ? (
-            <View>
-              <TouchableOpacity
-                onPress={(e) => challenges.acceptChallenge(challenge)}
-              >
-                <Text style={styles.name}> accept </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={(e) => challenges.denyChallenge(challenge)}
-              >
-                <Text style={styles.name}> deny </Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity
-              onPress={(e) => challenges.acceptChallenge(challenge)}
-            >
-              <Text style={styles.name}> Start </Text>
-            </TouchableOpacity>
-          )}
+          <View>{getButtons()}</View>
         </View>
       );
     });
