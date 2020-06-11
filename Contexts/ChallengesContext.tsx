@@ -6,7 +6,7 @@ import { AuthContext, AuthContextProps } from "./AuthContext";
 import { Challenge, User } from "../base-types";
 
 export interface ChallengesContextProps {
-  acceptChallenge(id: string): void;
+  acceptChallenge(challenge: Challenge): void;
   denyChallenge(id: string): void;
   createChallenge(opponent: User, discipline: string): void;
   challenges: Array<Challenge>;
@@ -18,8 +18,11 @@ export const ChallengesProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   const [challenges, setChallenges] = useState<Array<Challenge>>([]);
 
-  const acceptChallenge = (id: string): void => {
-    firestore().collection("challenges").doc(id).update({ accepted: true });
+  const acceptChallenge = (challenge: Challenge): void => {
+    firestore()
+      .collection("challenges")
+      .doc(challenge.id)
+      .update({ accepted: true });
   };
 
   const denyChallenge = (id: string): void => {
@@ -46,8 +49,10 @@ export const ChallengesProvider = (props) => {
         .collection("challenges")
         .where("challenger.email", "==", auth.user?.email)
         .onSnapshot((snapshot) => {
+          let newArray: Array<Challenge> = [];
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
+            challenge.id = doc.id;
             if (
               !challenges.some(
                 (c) =>
@@ -55,9 +60,10 @@ export const ChallengesProvider = (props) => {
                   c.discipline === challenge.discipline
               )
             ) {
-              setChallenges([...challenges, challenge]);
+              newArray.push(challenge);
             }
           });
+          setChallenges(newArray);
         });
       firestore()
         .collection("challenges")
@@ -65,6 +71,7 @@ export const ChallengesProvider = (props) => {
         .onSnapshot((snapshot) => {
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
+            challenge.id = doc.id;
             if (
               !challenges.some(
                 (c) =>
@@ -77,7 +84,7 @@ export const ChallengesProvider = (props) => {
           });
         });
     }
-  }, [auth.user, challenges]);
+  }, [auth.user]);
 
   return (
     <ChallengesContext.Provider

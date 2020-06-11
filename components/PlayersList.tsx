@@ -88,14 +88,20 @@ export default function PlayersList(props: PlayersListProps) {
           ? challenge.challenger
           : challenge.challengedUser;
       return (
-        <TouchableOpacity
-          key={opponent.email + challenge.discipline}
-          style={styles.user}
-        >
-          <Text style={styles.name}>{opponent.name}</Text>
-          <Text style={styles.name}>{challenge.discipline}</Text>
-          <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
-        </TouchableOpacity>
+        <View key={opponent.email + challenge.discipline} style={styles.user}>
+          <View>
+            <Text style={styles.name}>{opponent.name}</Text>
+            <Text style={styles.name}>{challenge.discipline}</Text>
+            <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
+          </View>
+          {!challenge.accepted && (
+            <TouchableOpacity
+              onPress={(e) => challenges.acceptChallenge(challenge)}
+            >
+              <Text style={styles.name}> accept </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       );
     });
     return userListItems;
