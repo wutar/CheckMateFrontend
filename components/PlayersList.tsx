@@ -94,11 +94,24 @@ export default function PlayersList(props: PlayersListProps) {
             <Text style={styles.name}>{challenge.discipline}</Text>
             <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
           </View>
-          {!challenge.accepted && (
+          {!challenge.accepted ? (
+            <View>
+              <TouchableOpacity
+                onPress={(e) => challenges.acceptChallenge(challenge)}
+              >
+                <Text style={styles.name}> accept </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={(e) => challenges.denyChallenge(challenge)}
+              >
+                <Text style={styles.name}> deny </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity
               onPress={(e) => challenges.acceptChallenge(challenge)}
             >
-              <Text style={styles.name}> accept </Text>
+              <Text style={styles.name}> Start </Text>
             </TouchableOpacity>
           )}
         </View>

@@ -7,7 +7,7 @@ import { Challenge, User } from "../base-types";
 
 export interface ChallengesContextProps {
   acceptChallenge(challenge: Challenge): void;
-  denyChallenge(id: string): void;
+  denyChallenge(challenge: Challenge): void;
   createChallenge(opponent: User, discipline: string): void;
   challenges: Array<Challenge>;
 }
@@ -25,8 +25,8 @@ export const ChallengesProvider = (props) => {
       .update({ accepted: true });
   };
 
-  const denyChallenge = (id: string): void => {
-    firestore().collection("challenges").doc(id).delete();
+  const denyChallenge = (challenge: Challenge): void => {
+    firestore().collection("challenges").doc(challenge.id).delete();
   };
 
   const createChallenge = (opponent: User, discipline: string): void => {
