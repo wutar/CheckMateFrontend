@@ -83,17 +83,22 @@ export default function PlayersList(props: PlayersListProps) {
 
   const getChallenges = (): Array<JSX.Element> => {
     const userListItems = challenges.challenges.map((challenge) => {
+      const opponent: User =
+        challenge.challengedUser?.email == auth.user!.email
+          ? challenge.challenger
+          : challenge.challengedUser;
+
       const getButtons = (): JSX.Element => {
         if (challenge.started) {
           return (
             <View>
               <TouchableOpacity
-                onPress={(e) => challenges.acceptChallenge(challenge)}
+                onPress={(e) => challenges.winChallenge(challenge)}
               >
                 <Text style={styles.name}> I won! </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={(e) => challenges.denyChallenge(challenge)}
+                onPress={(e) => challenges.looseChallenge(challenge, opponent)}
               >
                 <Text style={styles.name}> I lost! </Text>
               </TouchableOpacity>
@@ -124,10 +129,7 @@ export default function PlayersList(props: PlayersListProps) {
           </View>
         );
       };
-      const opponent: User =
-        challenge.challengedUser?.email == auth.user!.email
-          ? challenge.challenger
-          : challenge.challengedUser;
+
       return (
         <View key={opponent.email + challenge.discipline} style={styles.user}>
           <View>

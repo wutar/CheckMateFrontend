@@ -9,6 +9,8 @@ export interface ChallengesContextProps {
   acceptChallenge(challenge: Challenge): void;
   startChallenge(challenge: Challenge): void;
   denyChallenge(challenge: Challenge): void;
+  winChallenge(challenge: Challenge): void;
+  looseChallenge(challenge: Challenge, opponent: User): void;
   createChallenge(opponent: User, discipline: string): void;
   challenges: Array<Challenge>;
 }
@@ -19,6 +21,18 @@ export const ChallengesProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   const [challenges, setChallenges] = useState<Array<Challenge>>([]);
 
+  const winChallenge = (challenge: Challenge): void => {
+    firestore()
+      .collection("challenges")
+      .doc(challenge.id)
+      .update({ winnerEmail: auth.user!.email });
+  };
+
+  const looseChallenge = (challenge: Challenge, opponent: User): void => {
+    firestore().collection("challenges").doc(challenge.id).update({
+      winnerEmail: opponent.email,
+    });
+  };
   const startChallenge = (challenge: Challenge): void => {
     firestore()
       .collection("challenges")
@@ -96,6 +110,8 @@ export const ChallengesProvider = (props) => {
   return (
     <ChallengesContext.Provider
       value={{
+        winChallenge,
+        looseChallenge,
         startChallenge,
         acceptChallenge,
         denyChallenge,
