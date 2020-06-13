@@ -28,9 +28,9 @@ export const AuthProvider = (props) => {
         firestore().collection("users").add({
           email: email.toLowerCase(),
           name: username,
-          goLevel: 0,
-          chessLevel: 0,
-          checkersLevel: 0,
+          goLevel: 1,
+          chessLevel: 1,
+          checkersLevel: 1,
         });
       })
       .catch((error) => {

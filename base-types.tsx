@@ -1,5 +1,6 @@
 export interface Challenge {
   id?: string;
+  winnerEmail?: string;
   discipline: string;
   challenger: User;
   challengedUser: User;
@@ -24,6 +25,10 @@ export interface Position {
 
 export interface User {
   email: string;
+  potentialDouchebagPoints: number;
+  goXP: number;
+  chessXP: number;
+  checkersXP: number;
   goLevel: number;
   chessLevel: number;
   checkersLevel: number;

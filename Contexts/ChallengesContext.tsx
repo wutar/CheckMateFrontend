@@ -21,17 +21,69 @@ export const ChallengesProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   const [challenges, setChallenges] = useState<Array<Challenge>>([]);
 
-  const winChallenge = (challenge: Challenge): void => {
+  const addPotentialDouchebagPoint = (loser: User, winner: User): void => {
+    [loser, winner].forEach((player) => {
+      player.potentialDouchebagPoints += 1;
+      firestore()
+        .collection("users")
+        .where("email", "==", player.email)
+        .get()
+        .then((docs) => {
+          docs[0].update(player);
+        });
+    });
+  };
+  const addExpPoints = (
+    loser: User,
+    winner: User,
+    discipline: string
+  ): void => {
+    const opponentLevel = loser[discipline.toLowerCase() + "Level"];
+    const playerLevel = winner[discipline.toLowerCase() + "Level"];
+    const gainedPoints = (opponentLevel * 100) / 7;
+    const initialPoints = winner[discipline.toLowerCase() + "XP"] | 0;
+    const totalPoints = initialPoints + gainedPoints;
+    const newLevel = Math.cbrt(totalPoints);
+    winner[discipline.toLowerCase() + "XP"] = totalPoints;
+    winner[discipline.toLowerCase() + "Level"] = newLevel;
     firestore()
-      .collection("challenges")
-      .doc(challenge.id)
-      .update({ winnerEmail: auth.user!.email });
+      .collection("users")
+      .where("email", "==", winner.email)
+      .get()
+      .then((snapshot) => {
+        const ref = snapshot.docs[0];
+        firestore().collection("users").doc(ref.id).update(winner);
+      });
+  };
+
+  const winChallenge = (challenge: Challenge): void => {
+    const opponent =
+      challenge.challengedUser.email == auth.user!.email
+        ? challenge.challenger
+        : challenge.challengedUser;
+    if (!challenge.winnerEmail) {
+      firestore()
+        .collection("challenges")
+        .doc(challenge.id)
+        .update({ winnerEmail: auth.user!.email });
+    } else if (challenge.winnerEmail === auth.user!.email) {
+      addExpPoints(opponent, auth.user!, challenge.discipline);
+    } else {
+      addPotentialDouchebagPoint(auth.user!, opponent);
+    }
   };
 
   const looseChallenge = (challenge: Challenge, opponent: User): void => {
-    firestore().collection("challenges").doc(challenge.id).update({
-      winnerEmail: opponent.email,
-    });
+    if (!challenge.winnerEmail) {
+      firestore()
+        .collection("challenges")
+        .doc(challenge.id)
+        .update({ winnerEmail: opponent.email });
+    } else if (challenge.winnerEmail === opponent.email) {
+      addExpPoints(auth.user!, opponent, challenge.discipline);
+    } else {
+      addPotentialDouchebagPoint(opponent, auth.user!);
+    }
   };
   const startChallenge = (challenge: Challenge): void => {
     firestore()
@@ -39,6 +91,7 @@ export const ChallengesProvider = (props) => {
       .doc(challenge.id)
       .update({ started: true });
   };
+
   const acceptChallenge = (challenge: Challenge): void => {
     firestore()
       .collection("challenges")
