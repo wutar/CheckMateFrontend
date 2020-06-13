@@ -139,21 +139,21 @@ export default function PlayerStats(props: User) {
         infoLink="https://www.britgo.org/intro/intro2.html"
         isLoggedInUser={isLoggedInUser()}
         name="Go"
-        level={0}
+        level={props.goLevel}
         onChallenge={() => challenges.createChallenge(props, "Go")}
       />
       <Discipline
         infoLink="https://www.chess.com/learn-how-to-play-chess"
         isLoggedInUser={isLoggedInUser()}
         name="Chess"
-        level={0}
+        level={props.chessLevel}
         onChallenge={() => challenges.createChallenge(props, "Chess")}
       />
       <Discipline
         infoLink="https://www.filiphofer.com/en/american-checkers-rules/"
         isLoggedInUser={isLoggedInUser()}
         name="Checkers"
-        level={0}
+        level={props.checkersLevel}
         onChallenge={() => challenges.createChallenge(props, "Checkers")}
       />
 

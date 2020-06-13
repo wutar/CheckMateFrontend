@@ -28,8 +28,9 @@ export const ChallengesProvider = (props) => {
         .collection("users")
         .where("email", "==", player.email)
         .get()
-        .then((docs) => {
-          docs[0].update(player);
+        .then((snapshot) => {
+          const ref = snapshot.docs[0];
+          firestore().collection("users").doc(ref.id).update(player);
         });
     });
   };
@@ -102,7 +103,20 @@ export const ChallengesProvider = (props) => {
   const denyChallenge = (challenge: Challenge): void => {
     firestore().collection("challenges").doc(challenge.id).delete();
   };
-
+  const subscribeToUsers = (challenge: Challenge): void => {
+    firestore()
+      .collection("users")
+      .where("email", "==", challenge.challenger.email)
+      .onSnapshot((snapshot) => {
+        challenge.challenger = snapshot.docs[0].data() as User;
+      });
+    firestore()
+      .collection("users")
+      .where("email", "==", challenge.challengedUser.email)
+      .onSnapshot((snapshot) => {
+        challenge.challengedUser = snapshot.docs[0].data() as User;
+      });
+  };
   const createChallenge = (opponent: User, discipline: string): void => {
     firestore()
       .collection("challenges")
@@ -134,6 +148,7 @@ export const ChallengesProvider = (props) => {
                   c.discipline === challenge.discipline
               )
             ) {
+              subscribeToUsers(challenge);
               newArray.push(challenge);
             }
           });
