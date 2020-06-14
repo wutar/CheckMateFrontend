@@ -1,6 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import * as firebase from "@react-native-firebase/app";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { AuthContext, AuthContextProps } from "./AuthContext";
 import { Challenge, User } from "../base-types";
@@ -8,7 +6,7 @@ import { Challenge, User } from "../base-types";
 export interface ChallengesContextProps {
   acceptChallenge(challenge: Challenge): void;
   startChallenge(challenge: Challenge): void;
-  denyChallenge(challenge: Challenge): void;
+  deleteChallenge(challenge: Challenge): void;
   winChallenge(challenge: Challenge): void;
   looseChallenge(challenge: Challenge, opponent: User): void;
   createChallenge(opponent: User, discipline: string): void;
@@ -40,13 +38,12 @@ export const ChallengesProvider = (props) => {
     discipline: string
   ): void => {
     const opponentLevel = loser[discipline.toLowerCase() + "Level"];
-    const playerLevel = winner[discipline.toLowerCase() + "Level"];
     const gainedPoints = (opponentLevel * 100) / 7;
     const initialPoints = winner[discipline.toLowerCase() + "XP"] | 0;
     const totalPoints = initialPoints + gainedPoints;
     const newLevel = Math.cbrt(totalPoints);
-    winner[discipline.toLowerCase() + "XP"] = totalPoints;
-    winner[discipline.toLowerCase() + "Level"] = newLevel;
+    winner[discipline.toLowerCase() + "XP"] = totalPoints.toFixed(0);
+    winner[discipline.toLowerCase() + "Level"] = newLevel.toFixed(0);
     firestore()
       .collection("users")
       .where("email", "==", winner.email)
@@ -72,6 +69,7 @@ export const ChallengesProvider = (props) => {
     } else {
       addPotentialDouchebagPoint(auth.user!, opponent);
     }
+    deleteChallenge(challenge);
   };
 
   const looseChallenge = (challenge: Challenge, opponent: User): void => {
@@ -85,6 +83,7 @@ export const ChallengesProvider = (props) => {
     } else {
       addPotentialDouchebagPoint(opponent, auth.user!);
     }
+    deleteChallenge(challenge);
   };
   const startChallenge = (challenge: Challenge): void => {
     firestore()
@@ -100,7 +99,7 @@ export const ChallengesProvider = (props) => {
       .update({ accepted: true });
   };
 
-  const denyChallenge = (challenge: Challenge): void => {
+  const deleteChallenge = (challenge: Challenge): void => {
     firestore().collection("challenges").doc(challenge.id).delete();
   };
 
@@ -154,7 +153,7 @@ export const ChallengesProvider = (props) => {
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
             challenge.id = doc.id;
-            subscribeToUsers(challenge);
+            //subscribeToUsers(challenge);
             newArray.push(challenge);
           });
           setChallenges(newArray);
@@ -169,11 +168,14 @@ export const ChallengesProvider = (props) => {
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
             challenge.id = doc.id;
-            subscribeToUsers(challenge);
+            //subscribeToUsers(challenge);
             newArray.push(challenge);
           });
           setChallenges(newArray);
         });
+      newArray.forEach((c) => {
+        subscribeToUsers(c);
+      });
     }
   }, [auth.user]);
 
@@ -184,7 +186,7 @@ export const ChallengesProvider = (props) => {
         looseChallenge,
         startChallenge,
         acceptChallenge,
-        denyChallenge,
+        deleteChallenge: deleteChallenge,
         createChallenge,
         challenges,
       }}

@@ -135,7 +135,9 @@ export default function PlayersList(props: PlayersListProps) {
           <View>
             <Text style={styles.name}>{opponent.name}</Text>
             <Text style={styles.name}>{challenge.discipline}</Text>
-            <Text style={styles.name}>Lv. {opponent.checkersLevel}</Text>
+            <Text style={styles.name}>
+              Lv. {opponent[challenge.discipline.toLowerCase() + "Level"]}
+            </Text>
           </View>
           <View>{getButtons()}</View>
         </View>

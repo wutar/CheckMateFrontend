@@ -31,6 +31,7 @@ export const AuthProvider = (props) => {
           goLevel: 1,
           chessLevel: 1,
           checkersLevel: 1,
+          potentialDouchebagPoints: 0,
         });
       })
       .catch((error) => {
