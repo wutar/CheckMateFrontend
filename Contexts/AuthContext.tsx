@@ -69,6 +69,7 @@ export const AuthProvider = (props) => {
 
   const logout = () => {
     auth().signOut();
+    setUser(null);
   };
 
   useEffect(() => {
