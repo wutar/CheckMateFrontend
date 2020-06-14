@@ -6,6 +6,7 @@ export interface Challenge {
   challengedUser: User;
   accepted: boolean;
   started: boolean;
+  endedEmail: string;
 }
 
 export interface HitMetaData {

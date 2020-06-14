@@ -122,7 +122,7 @@ export default function PlayersList(props: PlayersListProps) {
               <Text style={styles.name}> accept </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={(e) => challenges.denyChallenge(challenge)}
+              onPress={(e) => challenges.deleteChallenge(challenge)}
             >
               <Text style={styles.name}> deny </Text>
             </TouchableOpacity>

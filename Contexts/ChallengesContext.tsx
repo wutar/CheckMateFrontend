@@ -19,6 +19,12 @@ export const ChallengesProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   const [challenges, setChallenges] = useState<Array<Challenge>>([]);
 
+  const endChallenge = (challenge) => {
+    firestore()
+      .collection("challenges")
+      .doc(challenge.id)
+      .update({ endedEmail: auth.user!.email });
+  };
   const addPotentialDouchebagPoint = (loser: User, winner: User): void => {
     [loser, winner].forEach((player) => {
       player.potentialDouchebagPoints += 1;
@@ -32,6 +38,7 @@ export const ChallengesProvider = (props) => {
         });
     });
   };
+
   const addExpPoints = (
     loser: User,
     winner: User,
@@ -64,12 +71,14 @@ export const ChallengesProvider = (props) => {
         .collection("challenges")
         .doc(challenge.id)
         .update({ winnerEmail: auth.user!.email });
+      endChallenge(challenge);
     } else if (challenge.winnerEmail === auth.user!.email) {
       addExpPoints(opponent, auth.user!, challenge.discipline);
+      deleteChallenge(challenge);
     } else {
       addPotentialDouchebagPoint(auth.user!, opponent);
+      deleteChallenge(challenge);
     }
-    deleteChallenge(challenge);
   };
 
   const looseChallenge = (challenge: Challenge, opponent: User): void => {
@@ -78,12 +87,14 @@ export const ChallengesProvider = (props) => {
         .collection("challenges")
         .doc(challenge.id)
         .update({ winnerEmail: opponent.email });
+      endChallenge(challenge);
     } else if (challenge.winnerEmail === opponent.email) {
       addExpPoints(auth.user!, opponent, challenge.discipline);
+      deleteChallenge(challenge);
     } else {
       addPotentialDouchebagPoint(opponent, auth.user!);
+      deleteChallenge(challenge);
     }
-    deleteChallenge(challenge);
   };
   const startChallenge = (challenge: Challenge): void => {
     firestore()
@@ -112,15 +123,26 @@ export const ChallengesProvider = (props) => {
       .collection("users")
       .where("email", "==", challenge.challenger.email)
       .onSnapshot((snapshot) => {
-        challenge.challenger = snapshot.docs[0].data() as User;
-        replace(challenge);
+        const newChallenger = snapshot.docs[0].data() as User;
+        if (
+          JSON.stringify(challenge.challenger) !== JSON.stringify(newChallenger)
+        ) {
+          challenge.challenger = newChallenger;
+          replace(challenge);
+        }
       });
     firestore()
       .collection("users")
       .where("email", "==", challenge.challengedUser.email)
       .onSnapshot((snapshot) => {
-        challenge.challengedUser = snapshot.docs[0].data() as User;
-        replace(challenge);
+        const newChallengedUser = snapshot.docs[0].data() as User;
+        if (
+          JSON.stringify(challenge.challengedUser) !==
+          JSON.stringify(newChallengedUser)
+        ) {
+          challenge.challengedUser = snapshot.docs[0].data() as User;
+          replace(challenge);
+        }
       });
   };
   const createChallenge = (opponent: User, discipline: string): void => {
@@ -154,10 +176,11 @@ export const ChallengesProvider = (props) => {
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
             challenge.id = doc.id;
-            //subscribeToUsers(challenge);
             newArray.push(challenge);
           });
-          setChallenges(newArray);
+          setChallenges(
+            newArray.filter((c) => c.endedEmail !== auth.user!.email)
+          );
         });
       firestore()
         .collection("challenges")
@@ -169,10 +192,11 @@ export const ChallengesProvider = (props) => {
           snapshot.docs.forEach((doc) => {
             let challenge = doc.data() as Challenge;
             challenge.id = doc.id;
-            //subscribeToUsers(challenge);
             newArray.push(challenge);
           });
-          setChallenges(newArray);
+          setChallenges(
+            newArray.filter((c) => c.endedEmail !== auth.user!.email)
+          );
         });
       newArray.forEach((c) => {
         subscribeToUsers(c);
