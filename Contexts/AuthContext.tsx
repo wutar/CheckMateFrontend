@@ -76,11 +76,9 @@ export const AuthProvider = (props) => {
         firestore()
           .collection("users")
           .where("email", "==", userState!.email)
-          .get()
-          .then((snapshot) => {
+          .onSnapshot((snapshot) => {
             setUser(snapshot.docs[0].data() as User);
-          })
-          .catch((e) => setUser(null));
+          });
       }
     });
   }, []);
