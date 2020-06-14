@@ -113,6 +113,7 @@ export const ChallengesProvider = (props) => {
       .where("email", "==", challenge.challenger.email)
       .onSnapshot((snapshot) => {
         challenge.challenger = snapshot.docs[0].data() as User;
+        replace(challenge);
       });
     firestore()
       .collection("users")
