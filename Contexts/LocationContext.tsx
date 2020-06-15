@@ -62,7 +62,6 @@ export const LocationProvider = (props) => {
       (position) => {
         setCurrentLongitude(position.coords.longitude);
         setCurrentLatitude(position.coords.latitude);
-        //exposeLocation();
       },
       (error) => {
         alert(error);
@@ -91,6 +90,7 @@ export const LocationProvider = (props) => {
       update(auth.user);
     }
   };
+
   const enableLocation = async () => {
     await requestLocationPermission();
     RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
