@@ -118,16 +118,19 @@ export const LocationProvider = (props) => {
     } else {
       getLocation();
       if (currentLongitude !== 0 && currentLatitude !== 0) {
-        getNearHotspots(currentLatitude, currentLongitude)
+        /*getNearHotspots(currentLatitude, currentLongitude)
           .then((hotspotsFromQuery) => {
             setHotspots(hotspotsFromQuery);
           })
           .catch((error) => {
             alert(error);
-          });
+          });*/
         let copyUsers = [...nearUsers];
         getNearUsers(currentLatitude, currentLongitude, 5)
           .then((usersFromQuery) => {
+            usersFromQuery = usersFromQuery.filter(
+              (user) => user.email !== auth.user!.email
+            );
             usersFromQuery.forEach((u) => {
               copyUsers = copyUsers.filter((user) => u.email !== user.email);
             });
