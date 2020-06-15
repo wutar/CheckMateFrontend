@@ -48,7 +48,7 @@ export const LocationProvider = (props) => {
   }
   const geo = geofirex.init(firebase);
 
-  const getNearHotspots = (lat: number, long: number): Promise<any> => {
+  const getNearHotspots = (): Promise<any> => {
     const hotspotsRef = firebase.firestore().collection("hotspots");
     const center = geo.point(currentLatitude, currentLongitude);
     const radius = 5; // query hotspots in a radius of 5 km
@@ -62,7 +62,7 @@ export const LocationProvider = (props) => {
       (position) => {
         setCurrentLongitude(position.coords.longitude);
         setCurrentLatitude(position.coords.latitude);
-        exposeLocation(position.coords.latitude, position.coords.longitude);
+        //exposeLocation();
       },
       (error) => {
         alert(error);
@@ -76,11 +76,7 @@ export const LocationProvider = (props) => {
     );
   };
 
-  const getNearUsers = (
-    lat: number,
-    long: number,
-    radius: number
-  ): Promise<any> => {
+  const getNearUsers = (radius: number): Promise<any> => {
     const users = firebase.firestore().collection("users");
     const center = geo.point(currentLatitude, currentLongitude);
     const query = geo.query(users).within(center, radius, "location");
@@ -88,8 +84,8 @@ export const LocationProvider = (props) => {
     return items;
   };
 
-  const exposeLocation = async (lat: number, long: number) => {
-    const location = geo.point(lat, long);
+  const exposeLocation = async () => {
+    const location = geo.point(currentLatitude, currentLongitude);
     if (auth.user) {
       auth.user!.location = location;
       update(auth.user);
@@ -112,34 +108,37 @@ export const LocationProvider = (props) => {
     );
   };
 
+  const populateHotspots = (): void => {
+    getNearHotspots()
+      .then((hotspotsFromQuery) => {
+        setHotspots(hotspotsFromQuery);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
+  const populateUsers = (): void => {
+    let copyUsers = [...nearUsers];
+    getNearUsers(5).then((usersFromQuery) => {
+      usersFromQuery = usersFromQuery.filter(
+        (user) => user.email !== auth.user!.email
+      );
+      usersFromQuery.forEach((u) => {
+        copyUsers = copyUsers.filter((user) => u.email !== user.email);
+      });
+      setNearUsers([...copyUsers, ...usersFromQuery]);
+    });
+  };
+
   useEffect(() => {
     if (!locationEnabled) {
       enableLocation();
     } else {
       getLocation();
       if (currentLongitude !== 0 && currentLatitude !== 0) {
-        /*getNearHotspots(currentLatitude, currentLongitude)
-          .then((hotspotsFromQuery) => {
-            setHotspots(hotspotsFromQuery);
-          })
-          .catch((error) => {
-            alert(error);
-          });*/
-        let copyUsers = [...nearUsers];
-        getNearUsers(currentLatitude, currentLongitude, 5)
-          .then((usersFromQuery) => {
-            usersFromQuery = usersFromQuery.filter(
-              (user) => user.email !== auth.user!.email
-            );
-            usersFromQuery.forEach((u) => {
-              copyUsers = copyUsers.filter((user) => u.email !== user.email);
-            });
-            setNearUsers([...copyUsers, ...usersFromQuery]);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-        exposeLocation(currentLatitude, currentLongitude);
+        populateHotspots();
+        populateUsers();
+        exposeLocation();
       }
     }
     return () => {};
