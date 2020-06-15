@@ -70,7 +70,7 @@ export const LocationProvider = (props) => {
       },
       {
         enableHighAccuracy: false,
-        timeout: 1000 * 60 * 2, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
+        timeout: 1000 * 60 * 1.5, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
         maximumAge: 1000 * 60 * 15, // 15min
       }
     );
@@ -89,14 +89,36 @@ export const LocationProvider = (props) => {
   };
 
   const exposeLocation = async (lat: number, long: number) => {
+    const location = geo.point(lat, long);
     if (auth.user) {
+      auth.user!.location = location;
       firebase
         .firestore()
         .collection("users")
         .where("email", "==", auth.user?.email)
         .get()
         .then((querySnapshot) => {
-          querySnapshot.docs[0].ref.update({ location: geo.point(lat, long) });
+          querySnapshot.docs[0].ref?.update(auth.user!);
+        });
+      firebase
+        .firestore()
+        .collection("challenges")
+        .where("challenger.email", "==", auth.user?.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            doc.ref?.update({ challenger: auth.user! });
+          });
+        });
+      firebase
+        .firestore()
+        .collection("challenges")
+        .where("challengedUser.email", "==", auth.user?.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) =>
+            doc.ref?.update({ challengedUser: auth.user! })
+          );
         });
     }
   };

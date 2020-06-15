@@ -213,7 +213,7 @@ export const ChallengesProvider = (props) => {
         });
     }
     challenges.forEach((c) => {
-      subscribeToUsers(c);
+      //subscribeToUsers(c);
     });
   }, [auth.user]);
 
