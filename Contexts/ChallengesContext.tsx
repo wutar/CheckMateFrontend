@@ -122,27 +122,40 @@ export const ChallengesProvider = (props) => {
     firestore()
       .collection("users")
       .where("email", "==", challenge.challenger.email)
-      .onSnapshot((snapshot) => {
-        const newChallenger = snapshot.docs[0].data() as User;
-        if (
-          JSON.stringify(challenge.challenger) !== JSON.stringify(newChallenger)
-        ) {
-          challenge.challenger = newChallenger;
-          replace(challenge);
-        }
+      .get()
+      .then((snapshot) => {
+        const userDoc = firestore()
+          .collection("users")
+          .doc(snapshot.docs[0].id);
+        userDoc.onSnapshot((userSnapshot) => {
+          const newChallenger = userSnapshot.data() as User;
+          if (
+            JSON.stringify(challenge.challenger) !==
+            JSON.stringify(newChallenger)
+          ) {
+            challenge.challenger = newChallenger;
+            replace(challenge);
+          }
+        });
       });
     firestore()
       .collection("users")
       .where("email", "==", challenge.challengedUser.email)
-      .onSnapshot((snapshot) => {
-        const newChallengedUser = snapshot.docs[0].data() as User;
-        if (
-          JSON.stringify(challenge.challengedUser) !==
-          JSON.stringify(newChallengedUser)
-        ) {
-          challenge.challengedUser = snapshot.docs[0].data() as User;
-          replace(challenge);
-        }
+      .get()
+      .then((snapshot) => {
+        const userDoc = firestore()
+          .collection("users")
+          .doc(snapshot.docs[0].id);
+        userDoc.onSnapshot((userSnapshot) => {
+          const newChallengedUser = userSnapshot.data() as User;
+          if (
+            JSON.stringify(challenge.challengedUser) !==
+            JSON.stringify(newChallengedUser)
+          ) {
+            challenge.challengedUser = newChallengedUser;
+            replace(challenge);
+          }
+        });
       });
   };
   const createChallenge = (opponent: User, discipline: string): void => {
@@ -198,10 +211,10 @@ export const ChallengesProvider = (props) => {
             newArray.filter((c) => c.endedEmail !== auth.user!.email)
           );
         });
-      newArray.forEach((c) => {
-        subscribeToUsers(c);
-      });
     }
+    challenges.forEach((c) => {
+      subscribeToUsers(c);
+    });
   }, [auth.user]);
 
   return (

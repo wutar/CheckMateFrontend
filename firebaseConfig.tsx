@@ -1,5 +1,5 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyAb_LpTajlbKtroiyG2svCghLCILhqxhtU",
+  apiKey: "AIzaSyDVguWpupPtb3QW21nfN3jSwjPeXGVENXY",
   authDomain: "check-mate-274609.firebaseapp.com",
   databaseURL: "https://check-mate-274609.firebaseio.com",
   projectId: "check-mate-274609",

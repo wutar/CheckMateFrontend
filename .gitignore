@@ -63,3 +63,7 @@ buck-out/
 
 #heap profiling files 
 *.hprof
+
+.vscode/
+google-services.json
+AndroidManifest.xml

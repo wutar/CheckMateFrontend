@@ -78,7 +78,9 @@ import com.android.build.OutputFile
 project.ext.react = [
     entryFile: "index.js",
     enableHermes: false,
-    bundleInRelease: false
+    bundleInRelease: true,
+    bundleInDebug: true,
+    devDisabledInDebug: true
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
@@ -179,6 +181,9 @@ android {
 
         }
     }
+    dexOptions {
+    javaMaxHeapSize "4g"
+  }
 }
 
 dependencies {
