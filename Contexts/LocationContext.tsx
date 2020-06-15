@@ -10,6 +10,7 @@ import { Observable } from "rxjs";
 import Geolocation from "@react-native-community/geolocation";
 import RNReactNativeLocationServicesSettings from "react-native-location-services-settings";
 import { User, Hotspot } from "../base-types";
+import { PermissionsAndroid } from "react-native";
 
 export interface LocationContextProps {
   exposeLocation(lat: number, long: number): void;
@@ -19,7 +20,20 @@ export interface LocationContextProps {
   hotspots: Array<Hotspot>;
   nearUsers: Array<User>;
 }
-
+export async function requestLocationPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the location");
+    } else {
+      console.log("location permission denied");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 export const LocationContext = createContext({} as LocationContextProps);
 export const LocationProvider = (props) => {
   const [currentLongitude, setCurrentLongitude] = useState(0);
@@ -31,7 +45,6 @@ export const LocationProvider = (props) => {
   const auth: AuthContextProps = useContext(AuthContext);
   if (firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
-    const firestore = firebase.firestore();
   }
   const geo = geofirex.init(firebase);
 
@@ -87,7 +100,8 @@ export const LocationProvider = (props) => {
         });
     }
   };
-  const enableLocation = () => {
+  const enableLocation = async () => {
+    await requestLocationPermission();
     RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
       (res) => {
         if (!res.enabled) {
