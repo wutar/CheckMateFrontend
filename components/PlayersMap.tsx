@@ -378,7 +378,6 @@ export default function PlayersMap() {
           auth.user!.email == challenge.challengedUser.email
             ? challenge.challenger
             : challenge.challengedUser;
-        //   if (opponent.location?.geopoint.latitude) {
         return (
           <Marker
             key={opponent.email + challenge.discipline}
@@ -391,19 +390,6 @@ export default function PlayersMap() {
             <Text style={styles.opponentName}>{opponent.name}</Text>
           </Marker>
         );
-        //}
-        /* return (
-          <Marker
-            key={opponent.email + challenge.discipline}
-            coordinate={{
-              latitude: opponent.location!.geopoint.wc!,
-              longitude: opponent.location!.geopoint.Rc!,
-            }}
-          >
-            <Image source={ninja} style={styles.image} />
-            <Text>{opponent.name}</Text>
-          </Marker>
-        );*/
       });
 
     return [...hotspotMarkers, ...usersMarkers];

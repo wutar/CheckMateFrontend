@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import firestore from "@react-native-firebase/firestore";
 import { AuthContext, AuthContextProps } from "./AuthContext";
-import { Challenge, User } from "../base-types";
+import { Challenge, User, update } from "../base-types";
 
 export interface ChallengesContextProps {
   acceptChallenge(challenge: Challenge): void;
@@ -51,7 +51,8 @@ export const ChallengesProvider = (props) => {
     const newLevel = Math.cbrt(totalPoints);
     winner[discipline.toLowerCase() + "XP"] = totalPoints.toFixed(0);
     winner[discipline.toLowerCase() + "Level"] = newLevel.toFixed(0);
-    firestore()
+    update(winner);
+    /*firestore()
       .collection("users")
       .where("email", "==", winner.email)
       .get()
@@ -59,6 +60,30 @@ export const ChallengesProvider = (props) => {
         const ref = snapshot.docs[0];
         firestore().collection("users").doc(ref.id).update(winner);
       });
+    firestore()
+      .collection("challenges")
+      .where("challenger.email", "==", winner.email)
+      .get()
+      .then((snapshot) => {
+        snapshot.docs.forEach((ref) => {
+          firestore()
+            .collection("users")
+            .doc(ref.id)
+            .update({ challenger: winner });
+        });
+      });
+    firestore()
+      .collection("challenges")
+      .where("challengedUser.email", "==", winner.email)
+      .get()
+      .then((snapshot) => {
+        snapshot.docs.forEach((ref) => {
+          firestore()
+            .collection("users")
+            .doc(ref.id)
+            .update({ challengedUser: winner });
+        });
+      });*/
   };
 
   const winChallenge = (challenge: Challenge): void => {
@@ -118,7 +143,7 @@ export const ChallengesProvider = (props) => {
     firestore().collection("challenges").doc(challenge.id).update(challenge);
   };
 
-  const subscribeToUsers = (challenge: Challenge): void => {
+  /* const subscribeToUsers = (challenge: Challenge): void => {
     firestore()
       .collection("users")
       .where("email", "==", challenge.challenger.email)
@@ -157,7 +182,7 @@ export const ChallengesProvider = (props) => {
           }
         });
       });
-  };
+  };*/
   const createChallenge = (opponent: User, discipline: string): void => {
     firestore()
       .collection("challenges")
@@ -212,9 +237,9 @@ export const ChallengesProvider = (props) => {
           );
         });
     }
-    challenges.forEach((c) => {
-      //subscribeToUsers(c);
-    });
+    /*challenges.forEach((c) => {
+      subscribeToUsers(c);
+    }); */
   }, [auth.user]);
 
   return (

@@ -1,3 +1,5 @@
+import { firestore } from "firebase";
+
 export interface Challenge {
   id?: string;
   winnerEmail?: string;
@@ -44,4 +46,57 @@ export interface Hotspot {
   hitMetaData: object;
   id: number;
   position: Position;
+}
+
+const updateUserTable = (user: User): void => {
+  firestore()
+    .collection("users")
+    .where("email", "==", user.email)
+    .get()
+    .then((snapshot) => {
+      const ref = snapshot.docs[0];
+      firestore().collection("users").doc(ref.id).update(user);
+    });
+};
+
+const updateChallenger = (user: User): void => {
+  firestore()
+    .collection("challenges")
+    .where("challenger.email", "==", user?.email)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+        doc.ref?.update({ challenger: user! });
+      });
+    });
+};
+
+const updateChallengedUser = (user: User): void => {
+  firestore()
+    .collection("challenges")
+    .where("challengedUser.email", "==", user?.email)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+        doc.ref?.update({ challengedUser: user! });
+      });
+    });
+  /*firestore()
+    .collection("challenges")
+    .where("challengedUser.email", "==", user.email)
+    .get()
+    .then((snapshot) => {
+      snapshot.docs.forEach((ref) => {
+        firestore()
+          .collection("users")
+          .doc(ref.id)
+          .update({ challengedUser: user });
+      });
+    });*/
+};
+
+export function update(user: User) {
+  updateUserTable(user);
+  updateChallenger(user);
+  updateChallengedUser(user);
 }
