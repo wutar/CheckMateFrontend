@@ -13,6 +13,7 @@ import {
   ChallengesContext,
 } from "../Contexts/ChallengesContext";
 import { AuthContextProps, AuthContext } from "../Contexts/AuthContext";
+import { withTheme } from "react-native-elements";
 
 const mapStylesJSON = [
   {
@@ -344,6 +345,10 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
   },
+  opponentName: {
+    marginLeft: 15,
+    color: "white",
+  },
 });
 
 export default function PlayersMap() {
@@ -373,20 +378,21 @@ export default function PlayersMap() {
           auth.user!.email == challenge.challengedUser.email
             ? challenge.challenger
             : challenge.challengedUser;
-        if (opponent.location?.geopoint.latitude) {
-          return (
-            <Marker
-              key={opponent.email + challenge.discipline}
-              coordinate={{
-                latitude: opponent.location!.geopoint.latitude,
-                longitude: opponent.location!.geopoint.longitude,
-              }}
-            >
-              <Image source={ninja} style={styles.image} />
-            </Marker>
-          );
-        }
+        //   if (opponent.location?.geopoint.latitude) {
         return (
+          <Marker
+            key={opponent.email + challenge.discipline}
+            coordinate={{
+              latitude: opponent.location!.geopoint.latitude,
+              longitude: opponent.location!.geopoint.longitude,
+            }}
+          >
+            <Image source={ninja} style={styles.image} />
+            <Text style={styles.opponentName}>{opponent.name}</Text>
+          </Marker>
+        );
+        //}
+        /* return (
           <Marker
             key={opponent.email + challenge.discipline}
             coordinate={{
@@ -395,8 +401,9 @@ export default function PlayersMap() {
             }}
           >
             <Image source={ninja} style={styles.image} />
+            <Text>{opponent.name}</Text>
           </Marker>
-        );
+        );*/
       });
 
     return [...hotspotMarkers, ...usersMarkers];
