@@ -87,22 +87,25 @@ export const LocationProvider = (props) => {
         });
     }
   };
+  const enableLocation = () => {
+    RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
+      (res) => {
+        if (!res.enabled) {
+          RNReactNativeLocationServicesSettings.askForEnabling((res) => {
+            if (res) {
+              setLocationEnabled(true);
+            }
+          });
+        } else {
+          setLocationEnabled(true);
+        }
+      }
+    );
+  };
 
   useEffect(() => {
     if (!locationEnabled) {
-      RNReactNativeLocationServicesSettings.checkStatus("high_accuracy").then(
-        (res) => {
-          if (!res.enabled) {
-            RNReactNativeLocationServicesSettings.askForEnabling((res) => {
-              if (res) {
-                setLocationEnabled(true);
-              }
-            });
-          } else {
-            setLocationEnabled(true);
-          }
-        }
-      );
+      enableLocation();
     } else {
       getLocation();
       if (currentLongitude !== 0 && currentLatitude !== 0) {

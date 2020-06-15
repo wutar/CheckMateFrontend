@@ -29,8 +29,11 @@ export const AuthProvider = (props) => {
           email: email.toLowerCase(),
           name: username,
           goLevel: 1,
+          goXP: 1,
           chessLevel: 1,
+          chessXP: 1,
           checkersLevel: 1,
+          checkersXP: 1,
           potentialDouchebagPoints: 0,
         });
       })

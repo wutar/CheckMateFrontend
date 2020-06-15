@@ -17,6 +17,8 @@ export interface HitMetaData {
 export interface GeoPoint {
   longitude: number;
   latitude: number;
+  Rc?: number;
+  wc?: number;
 }
 
 export interface Position {
@@ -35,7 +37,7 @@ export interface User {
   checkersLevel: number;
   hitMetadata?: HitMetaData;
   name: string;
-  position?: Position;
+  location?: Position;
 }
 
 export interface Hotspot {

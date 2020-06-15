@@ -99,11 +99,19 @@ const styles = StyleSheet.create({
 
 function Discipline(props: {
   name: string;
+  XP: number;
   level: number;
   onChallenge: () => void;
   isLoggedInUser: boolean;
   infoLink: string;
 }): JSX.Element {
+  const nextLevel = props.level + 1;
+  const minXPNextLevel = Math.pow(nextLevel, 3);
+  const minXPCurrentLevel = Math.pow(props.level, 3);
+  const XPGainedCurrentLevel = props.XP - minXPCurrentLevel;
+
+  const neededXPCurrentLevel = minXPNextLevel - minXPCurrentLevel;
+
   return (
     <View style={styles.discipline}>
       <View style={styles.left}>
@@ -118,9 +126,14 @@ function Discipline(props: {
           <Text style={styles.challengeButtonText}>Challenge </Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={() => Linking.openURL(props.infoLink)}>
-          <Image style={styles.infoButton} source={info} />
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={() => Linking.openURL(props.infoLink)}>
+            <Image style={styles.infoButton} source={info} />
+          </TouchableOpacity>
+          <Text style={styles.level}>
+            {XPGainedCurrentLevel}/{neededXPCurrentLevel} XP
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -140,6 +153,7 @@ export default function PlayerStats(props: User) {
         isLoggedInUser={isLoggedInUser()}
         name="Go"
         level={props.goLevel}
+        XP={props.checkersXP}
         onChallenge={() => challenges.createChallenge(props, "Go")}
       />
       <Discipline
@@ -147,6 +161,7 @@ export default function PlayerStats(props: User) {
         isLoggedInUser={isLoggedInUser()}
         name="Chess"
         level={props.chessLevel}
+        XP={props.checkersXP}
         onChallenge={() => challenges.createChallenge(props, "Chess")}
       />
       <Discipline
@@ -154,8 +169,10 @@ export default function PlayerStats(props: User) {
         isLoggedInUser={isLoggedInUser()}
         name="Checkers"
         level={props.checkersLevel}
+        XP={props.checkersXP}
         onChallenge={() => challenges.createChallenge(props, "Checkers")}
       />
+      <Text style={styles.level}>PDP: {props.potentialDouchebagPoints}</Text>
 
       {isLoggedInUser() && (
         <TouchableOpacity

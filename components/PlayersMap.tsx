@@ -1,11 +1,18 @@
 import React, { useEffect, useContext } from "react";
 import { StyleSheet, Text, View, Dimensions, Image } from "react-native";
 const pagoda = require("./img/pagoda.png"); //from game-icons.net
+const ninja = require("./img/ninja-head.png"); //from game-icons.net
+
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   LocationContextProps,
   LocationContext,
 } from "../Contexts/LocationContext";
+import {
+  ChallengesContextProps,
+  ChallengesContext,
+} from "../Contexts/ChallengesContext";
+import { AuthContextProps, AuthContext } from "../Contexts/AuthContext";
 
 const mapStylesJSON = [
   {
@@ -341,9 +348,12 @@ const styles = StyleSheet.create({
 
 export default function PlayersMap() {
   const location: LocationContextProps = useContext(LocationContext);
-
+  const challengesContext: ChallengesContextProps = useContext(
+    ChallengesContext
+  );
+  const auth: AuthContextProps = useContext(AuthContext);
   const getMarkers = (): Array<JSX.Element> => {
-    const markers = location.hotspots.map((hotspot) => {
+    const hotspotMarkers = location.hotspots.map((hotspot) => {
       return (
         <Marker
           key={hotspot.id}
@@ -356,7 +366,27 @@ export default function PlayersMap() {
         </Marker>
       );
     });
-    return markers;
+    const usersMarkers = challengesContext.challenges
+      .filter((c) => c.accepted)
+      .map((challenge) => {
+        const opponent =
+          auth.user!.email == challenge.challengedUser.email
+            ? challenge.challenger
+            : challenge.challengedUser;
+        return (
+          <Marker
+            key={opponent.email + challenge.discipline}
+            coordinate={{
+              latitude: opponent.location!.geopoint.wc!,
+              longitude: opponent.location!.geopoint.Rc!,
+            }}
+          >
+            <Image source={ninja} style={styles.image} />
+          </Marker>
+        );
+      });
+
+    return [...hotspotMarkers, ...usersMarkers];
   };
   useEffect(() => {
     return () => {};

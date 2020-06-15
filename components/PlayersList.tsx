@@ -73,7 +73,7 @@ export default function PlayersList(props: PlayersListProps) {
         >
           <Text style={styles.name}>{user.name}</Text>
           <Text style={styles.distance}>
-            {user.hitMetadata!.distance.toFixed(3)} km
+            {user.hitMetadata!.distance.toFixed(3)} km away
           </Text>
         </TouchableOpacity>
       );
@@ -114,18 +114,25 @@ export default function PlayersList(props: PlayersListProps) {
             </TouchableOpacity>
           );
         }
+        if (challenge.challengedUser.email == auth.user!.email) {
+          return (
+            <View>
+              <TouchableOpacity
+                onPress={(e) => challenges.acceptChallenge(challenge)}
+              >
+                <Text style={styles.name}> accept </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={(e) => challenges.deleteChallenge(challenge)}
+              >
+                <Text style={styles.name}> deny </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }
         return (
           <View>
-            <TouchableOpacity
-              onPress={(e) => challenges.acceptChallenge(challenge)}
-            >
-              <Text style={styles.name}> accept </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={(e) => challenges.deleteChallenge(challenge)}
-            >
-              <Text style={styles.name}> deny </Text>
-            </TouchableOpacity>
+            <Text style={styles.name}>Pending acceptance...</Text>
           </View>
         );
       };
