@@ -74,10 +74,7 @@ export const AuthProvider = (props) => {
 
   const logout = () => {
     auth().signOut();
-    user!.location = {
-      geopoint: new firestore.GeoPoint(0, 0),
-      geohash: "",
-    };
+    user!.location = undefined;
     update(user!);
     setUser(null);
   };
