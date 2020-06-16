@@ -117,6 +117,7 @@ export const LocationProvider = (props) => {
         alert(error);
       });
   };
+
   const populateUsers = (): void => {
     let copyUsers = [...nearUsers];
     getNearUsers(5).then((usersFromQuery) => {

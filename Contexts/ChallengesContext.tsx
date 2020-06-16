@@ -52,38 +52,6 @@ export const ChallengesProvider = (props) => {
     winner[discipline.toLowerCase() + "XP"] = totalPoints.toFixed(0);
     winner[discipline.toLowerCase() + "Level"] = newLevel.toFixed(0);
     update(winner);
-    /*firestore()
-      .collection("users")
-      .where("email", "==", winner.email)
-      .get()
-      .then((snapshot) => {
-        const ref = snapshot.docs[0];
-        firestore().collection("users").doc(ref.id).update(winner);
-      });
-    firestore()
-      .collection("challenges")
-      .where("challenger.email", "==", winner.email)
-      .get()
-      .then((snapshot) => {
-        snapshot.docs.forEach((ref) => {
-          firestore()
-            .collection("users")
-            .doc(ref.id)
-            .update({ challenger: winner });
-        });
-      });
-    firestore()
-      .collection("challenges")
-      .where("challengedUser.email", "==", winner.email)
-      .get()
-      .then((snapshot) => {
-        snapshot.docs.forEach((ref) => {
-          firestore()
-            .collection("users")
-            .doc(ref.id)
-            .update({ challengedUser: winner });
-        });
-      });*/
   };
 
   const winChallenge = (challenge: Challenge): void => {
@@ -142,48 +110,18 @@ export const ChallengesProvider = (props) => {
   const replace = (challenge: Challenge): void => {
     firestore().collection("challenges").doc(challenge.id).update(challenge);
   };
-
-  /* const subscribeToUsers = (challenge: Challenge): void => {
-    firestore()
-      .collection("users")
-      .where("email", "==", challenge.challenger.email)
-      .get()
-      .then((snapshot) => {
-        const userDoc = firestore()
-          .collection("users")
-          .doc(snapshot.docs[0].id);
-        userDoc.onSnapshot((userSnapshot) => {
-          const newChallenger = userSnapshot.data() as User;
-          if (
-            JSON.stringify(challenge.challenger) !==
-            JSON.stringify(newChallenger)
-          ) {
-            challenge.challenger = newChallenger;
-            replace(challenge);
-          }
-        });
-      });
-    firestore()
-      .collection("users")
-      .where("email", "==", challenge.challengedUser.email)
-      .get()
-      .then((snapshot) => {
-        const userDoc = firestore()
-          .collection("users")
-          .doc(snapshot.docs[0].id);
-        userDoc.onSnapshot((userSnapshot) => {
-          const newChallengedUser = userSnapshot.data() as User;
-          if (
-            JSON.stringify(challenge.challengedUser) !==
-            JSON.stringify(newChallengedUser)
-          ) {
-            challenge.challengedUser = newChallengedUser;
-            replace(challenge);
-          }
-        });
-      });
-  };*/
+  const challengeExists = (opponent: User, discipline: string): boolean => {
+    return (
+      challenges?.filter(
+        (c) =>
+          (c.challengedUser.email == opponent.email ||
+            c.challenger.email == opponent.email) &&
+          c.discipline == discipline
+      ).length > 0
+    );
+  };
   const createChallenge = (opponent: User, discipline: string): void => {
+    if (challengeExists(opponent, discipline)) return;
     firestore()
       .collection("challenges")
       .add({
@@ -200,46 +138,48 @@ export const ChallengesProvider = (props) => {
 
   let newArray: Array<Challenge> = [];
 
+  const getWhereChallenger = (): void => {
+    firestore()
+      .collection("challenges")
+      .where("challenger.email", "==", auth.user?.email)
+      .onSnapshot((snapshot) => {
+        newArray = [
+          ...newArray.filter((c) => c.challengedUser.email == auth.user!.email),
+        ];
+        snapshot.docs.forEach((doc) => {
+          let challenge = doc.data() as Challenge;
+          challenge.id = doc.id;
+          newArray.push(challenge);
+        });
+        setChallenges(
+          newArray.filter((c) => c.endedEmail !== auth.user!.email)
+        );
+      });
+  };
+
+  const getWhereChallengedUser = (): void => {
+    firestore()
+      .collection("challenges")
+      .where("challengedUser.email", "==", auth.user?.email)
+      .onSnapshot((snapshot) => {
+        newArray = [
+          ...newArray.filter((c) => c.challenger.email == auth.user!.email),
+        ];
+        snapshot.docs.forEach((doc) => {
+          let challenge = doc.data() as Challenge;
+          challenge.id = doc.id;
+          newArray.push(challenge);
+        });
+        setChallenges(
+          newArray.filter((c) => c.endedEmail !== auth.user!.email)
+        );
+      });
+  };
   useEffect(() => {
     if (auth.user) {
-      firestore()
-        .collection("challenges")
-        .where("challenger.email", "==", auth.user?.email)
-        .onSnapshot((snapshot) => {
-          newArray = [
-            ...newArray.filter(
-              (c) => c.challengedUser.email == auth.user!.email
-            ),
-          ];
-          snapshot.docs.forEach((doc) => {
-            let challenge = doc.data() as Challenge;
-            challenge.id = doc.id;
-            newArray.push(challenge);
-          });
-          setChallenges(
-            newArray.filter((c) => c.endedEmail !== auth.user!.email)
-          );
-        });
-      firestore()
-        .collection("challenges")
-        .where("challengedUser.email", "==", auth.user?.email)
-        .onSnapshot((snapshot) => {
-          newArray = [
-            ...newArray.filter((c) => c.challenger.email == auth.user!.email),
-          ];
-          snapshot.docs.forEach((doc) => {
-            let challenge = doc.data() as Challenge;
-            challenge.id = doc.id;
-            newArray.push(challenge);
-          });
-          setChallenges(
-            newArray.filter((c) => c.endedEmail !== auth.user!.email)
-          );
-        });
+      getWhereChallenger();
+      getWhereChallengedUser();
     }
-    /*challenges.forEach((c) => {
-      subscribeToUsers(c);
-    }); */
   }, [auth.user]);
 
   return (
