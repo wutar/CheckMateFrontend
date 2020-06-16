@@ -9,7 +9,7 @@ const styles = {
     marginTop: 200,
     padding: 10,
     backgroundColor: "white",
-    height: 250,
+    height: 280,
     borderRadius: 5,
   },
   input: {

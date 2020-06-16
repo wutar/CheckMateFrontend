@@ -27,7 +27,7 @@ export default function AuthorizationApp() {
         <LinearGradient
           start={{ x: 1, y: 1 }}
           end={{ x: 0, y: 0 }}
-          colors={["#93a4c3", "#1d233e"]}
+          colors={["#222222", "#222222"]}
           style={styles.gradient}
         >
           <Login />
