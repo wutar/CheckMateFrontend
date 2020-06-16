@@ -90,6 +90,12 @@ const styles = StyleSheet.create({
     marginTop: 7,
     fontSize: 25,
   },
+  PDP: {
+    marginLeft: 20,
+    marginTop: 12,
+    fontSize: 18,
+    color: "#F85858",
+  },
   left: {
     display: "flex",
     width: "50%",
@@ -184,7 +190,7 @@ export default function PlayerStats(props: User) {
         XP={props.checkersXP}
         onChallenge={() => challenges.createChallenge(props, "Checkers")}
       />
-      <Text style={styles.level}>PDP: {props.potentialDouchebagPoints}</Text>
+      <Text style={styles.PDP}>PDP: {props.potentialDouchebagPoints}</Text>
 
       {isLoggedInUser() && (
         <TouchableOpacity
