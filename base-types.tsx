@@ -8,7 +8,8 @@ export interface Challenge {
   challengedUser: User;
   accepted: boolean;
   started: boolean;
-  endedEmail: string;
+  endedEmail?: string;
+  endedTime?: number;
 }
 
 export interface HitMetaData {
@@ -81,18 +82,6 @@ const updateChallengedUser = (user: User): void => {
         doc.ref?.update({ challengedUser: user! });
       });
     });
-  /*firestore()
-    .collection("challenges")
-    .where("challengedUser.email", "==", user.email)
-    .get()
-    .then((snapshot) => {
-      snapshot.docs.forEach((ref) => {
-        firestore()
-          .collection("users")
-          .doc(ref.id)
-          .update({ challengedUser: user });
-      });
-    });*/
 };
 
 export function update(user: User) {

@@ -25,7 +25,7 @@ export const ChallengesProvider = (props) => {
     firestore()
       .collection("challenges")
       .doc(challenge.id)
-      .update({ endedEmail: auth.user!.email });
+      .update({ endedEmail: auth.user!.email, endedTime: Date.now() });
   };
   const addPotentialDouchebagPoint = (loser: User, winner: User): void => {
     [loser, winner].forEach((player) => {
@@ -91,6 +91,7 @@ export const ChallengesProvider = (props) => {
       deleteChallenge(challenge);
     }
   };
+
   const startChallenge = (challenge: Challenge): void => {
     firestore()
       .collection("challenges")
@@ -149,6 +150,7 @@ export const ChallengesProvider = (props) => {
       newChallenges.push(challenge);
     });
   };
+
   const getWhereChallenger = (): void => {
     firestore()
       .collection("challenges")
@@ -183,11 +185,24 @@ export const ChallengesProvider = (props) => {
       });
   };
 
+  const checkTime = (): void => {
+    challenges.forEach((c) => {
+      const opponent =
+        c.challenger.email == auth.user!.email
+          ? c.challengedUser
+          : c.challenger;
+      if (c.endedTime! < Date.now() - 1000 * 60 * 60) {
+        looseChallenge(c, opponent);
+      }
+    });
+  };
+
   useEffect(() => {
     if (auth.user) {
       getWhereChallenger();
       getWhereChallengedUser();
     }
+    checkTime();
   }, [auth.user]);
 
   return (
