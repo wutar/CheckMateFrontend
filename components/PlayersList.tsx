@@ -85,6 +85,10 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     marginTop: 15,
   },
+  pending: {
+    fontSize: 18,
+    color: "#ffffff",
+  },
 });
 
 interface PlayersListProps {}
@@ -162,7 +166,7 @@ export default function PlayersList() {
         }
         return (
           <View>
-            <Text style={styles.name}>Pending acceptance...</Text>
+            <Text style={styles.pending}>Pending </Text>
           </View>
         );
       };

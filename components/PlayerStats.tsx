@@ -96,6 +96,12 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
   },
+  XP: {
+    marginRight: 100,
+    marginTop: 15,
+    fontSize: 18,
+    color: "#ffffff",
+  },
 });
 
 function Discipline(props: {
@@ -131,7 +137,7 @@ function Discipline(props: {
           <TouchableOpacity onPress={() => Linking.openURL(props.infoLink)}>
             <Image style={styles.infoButton} source={info} />
           </TouchableOpacity>
-          <Text style={styles.level}>
+          <Text style={styles.XP}>
             {XPGainedCurrentLevel}/{neededXPCurrentLevel} XP
           </Text>
         </View>
