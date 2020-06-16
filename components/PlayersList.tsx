@@ -35,10 +35,11 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   h1: {
-    fontSize: 20,
+    fontSize: 35,
     color: "#ffffff",
+    marginTop: 20,
     marginBottom: 20,
-    marginLeft: 20,
+    marginLeft: 15,
   },
   usersList: {
     marginBottom: 200,
@@ -190,14 +191,10 @@ export default function PlayersList() {
   return (
     <ScrollView style={styles.container}>
       {challenges.challenges.length > 0 && (
-        <Text h1 style={styles.h1}>
-          Ongoing Challenges
-        </Text>
+        <Text style={styles.h1}>Ongoing Challenges</Text>
       )}
       {getChallenges()}
-      <Text h1 style={styles.h1}>
-        Nearby users
-      </Text>
+      <Text style={styles.h1}>Nearby users</Text>
       <View style={styles.usersList}>{getUsers()}</View>
       {selectedUser && (
         <Overlay

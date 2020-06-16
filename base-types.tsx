@@ -52,7 +52,7 @@ export interface Hotspot {
 const updateUserTable = (user: User): void => {
   firestore()
     .collection("users")
-    .where("email", "==", user.email)
+    .where("email", "==", user?.email)
     .get()
     .then((snapshot) => {
       const ref = snapshot.docs[0];

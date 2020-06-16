@@ -1,8 +1,10 @@
 import React, { createContext, useState, useEffect } from "react";
 import * as firebase from "@react-native-firebase/app";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
-import { User } from "../base-types";
+import firestore, {
+  FirebaseFirestoreTypes,
+} from "@react-native-firebase/firestore";
+import { User, update } from "../base-types";
 
 export interface AuthContextProps {
   user: User | null;
@@ -51,7 +53,7 @@ export const AuthProvider = (props) => {
             break;
           case "auth/invalid-password":
             setError(
-              "The provided password is invalid. It must at least six characters long."
+              "The provided password is invalid. It must be at least six characters long."
             );
             break;
           default:
@@ -72,6 +74,11 @@ export const AuthProvider = (props) => {
 
   const logout = () => {
     auth().signOut();
+    user!.location = {
+      geopoint: new firestore.GeoPoint(0, 0),
+      geohash: "",
+    };
+    update(user!);
     setUser(null);
   };
 

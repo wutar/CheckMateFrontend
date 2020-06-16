@@ -201,8 +201,8 @@ export const ChallengesProvider = (props) => {
     if (auth.user) {
       getWhereChallenger();
       getWhereChallengedUser();
+      checkTime();
     }
-    checkTime();
   }, [auth.user]);
 
   return (
