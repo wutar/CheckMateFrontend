@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   level: {
+    marginTop: 12,
     fontSize: 18,
     color: "#ffffff",
   },
@@ -77,9 +78,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   challengeButton: {
+    marginTop: 20,
     display: "flex",
     backgroundColor: "#23F5A0",
     height: 50,
+    padding: 5,
+    paddingBottom: 15,
   },
   challengeButtonText: {
     color: "white",
@@ -97,7 +101,8 @@ const styles = StyleSheet.create({
     height: 35,
   },
   XP: {
-    marginRight: 100,
+    alignSelf: "flex-end",
+    marginRight: 80,
     marginTop: 15,
     fontSize: 18,
     color: "#ffffff",

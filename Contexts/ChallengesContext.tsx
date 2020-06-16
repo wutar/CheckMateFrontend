@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import firestore from "@react-native-firebase/firestore";
+import firestore, {
+  FirebaseFirestoreTypes,
+} from "@react-native-firebase/firestore";
 import { AuthContext, AuthContextProps } from "./AuthContext";
 import { Challenge, User, update } from "../base-types";
 
@@ -136,23 +138,30 @@ export const ChallengesProvider = (props) => {
       });
   };
 
-  let newArray: Array<Challenge> = [];
+  let newChallenges: Array<Challenge> = [];
 
+  const readChallengesSnapshot = (
+    snapshot: FirebaseFirestoreTypes.QuerySnapshot
+  ) => {
+    snapshot.docs.forEach((doc) => {
+      let challenge = doc.data() as Challenge;
+      challenge.id = doc.id;
+      newChallenges.push(challenge);
+    });
+  };
   const getWhereChallenger = (): void => {
     firestore()
       .collection("challenges")
       .where("challenger.email", "==", auth.user?.email)
       .onSnapshot((snapshot) => {
-        newArray = [
-          ...newArray.filter((c) => c.challengedUser.email == auth.user!.email),
+        newChallenges = [
+          ...newChallenges.filter(
+            (c) => c.challengedUser.email == auth.user!.email
+          ),
         ];
-        snapshot.docs.forEach((doc) => {
-          let challenge = doc.data() as Challenge;
-          challenge.id = doc.id;
-          newArray.push(challenge);
-        });
+        readChallengesSnapshot(snapshot);
         setChallenges(
-          newArray.filter((c) => c.endedEmail !== auth.user!.email)
+          newChallenges.filter((c) => c.endedEmail !== auth.user!.email)
         );
       });
   };
@@ -162,19 +171,18 @@ export const ChallengesProvider = (props) => {
       .collection("challenges")
       .where("challengedUser.email", "==", auth.user?.email)
       .onSnapshot((snapshot) => {
-        newArray = [
-          ...newArray.filter((c) => c.challenger.email == auth.user!.email),
+        newChallenges = [
+          ...newChallenges.filter(
+            (c) => c.challenger.email == auth.user!.email
+          ),
         ];
-        snapshot.docs.forEach((doc) => {
-          let challenge = doc.data() as Challenge;
-          challenge.id = doc.id;
-          newArray.push(challenge);
-        });
+        readChallengesSnapshot(snapshot);
         setChallenges(
-          newArray.filter((c) => c.endedEmail !== auth.user!.email)
+          newChallenges.filter((c) => c.endedEmail !== auth.user!.email)
         );
       });
   };
+
   useEffect(() => {
     if (auth.user) {
       getWhereChallenger();
