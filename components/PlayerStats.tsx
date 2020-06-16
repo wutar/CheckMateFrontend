@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { AuthContext, AuthContextProps } from "../Contexts/AuthContext";
+
 import {
   View,
   Text,

@@ -1,29 +1,38 @@
 import {
-  ListView,
-  FlatList,
   StyleSheet,
   View,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { Text, Overlay } from "react-native-elements";
 import {
   LocationContext,
   LocationContextProps,
 } from "../Contexts/LocationContext";
-import React, { useContext, Fragment, useState } from "react";
+import React, { useContext, useState } from "react";
 import PlayerStats from "./PlayerStats";
 import {
   ChallengesContextProps,
   ChallengesContext,
 } from "../Contexts/ChallengesContext";
+const deny = require("./img/cancel.png"); //from game-icons.net
+const accept = require("./img/check-mark.png"); //from game-icons.net
+const start = require("./img/play-button.png"); //from game-icons.net
+const won = require("./img/trophy.png"); //from game-icons.net
+const lost = require("./img/thumb-down.png"); //from game-icons.net
+
 import { User } from "../base-types";
 import { AuthContextProps, AuthContext } from "../Contexts/AuthContext";
-import firebase from "firebase";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#222222",
+  },
+
+  level: {
+    fontSize: 18,
+    color: "#ffffff",
   },
   h1: {
     fontSize: 20,
@@ -38,6 +47,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderColor: "white",
     borderWidth: 2,
+    display: "flex",
+    flexDirection: "row",
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 15,
@@ -50,15 +61,34 @@ const styles = StyleSheet.create({
   distance: {
     color: "#ffffff",
     fontSize: 15,
+    marginTop: 10,
+    marginLeft: 190,
   },
   overlay: {
     width: "90%",
     height: 500,
   },
+  image: {
+    height: 50,
+    width: 50,
+    margin: 5,
+  },
+  right: {
+    width: "20%",
+  },
+  left: {
+    display: "flex",
+    width: "80%",
+  },
+  discipline: {
+    fontSize: 25,
+    color: "#ffffff",
+    marginTop: 15,
+  },
 });
 
 interface PlayersListProps {}
-export default function PlayersList(props: PlayersListProps) {
+export default function PlayersList() {
   const auth: AuthContextProps = useContext(AuthContext);
   const location: LocationContextProps = useContext(LocationContext);
   const challenges: ChallengesContextProps = useContext(ChallengesContext);
@@ -93,14 +123,14 @@ export default function PlayersList(props: PlayersListProps) {
           return (
             <View>
               <TouchableOpacity
-                onPress={(e) => challenges.winChallenge(challenge)}
+                onPress={() => challenges.winChallenge(challenge)}
               >
-                <Text style={styles.name}> I won! </Text>
+                <Image style={styles.image} source={won} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={(e) => challenges.looseChallenge(challenge, opponent)}
+                onPress={() => challenges.looseChallenge(challenge, opponent)}
               >
-                <Text style={styles.name}> I lost! </Text>
+                <Image style={styles.image} source={lost} />
               </TouchableOpacity>
             </View>
           );
@@ -108,9 +138,9 @@ export default function PlayersList(props: PlayersListProps) {
         if (challenge.accepted) {
           return (
             <TouchableOpacity
-              onPress={(e) => challenges.startChallenge(challenge)}
+              onPress={() => challenges.startChallenge(challenge)}
             >
-              <Text style={styles.name}> Start </Text>
+              <Image style={styles.image} source={start} />
             </TouchableOpacity>
           );
         }
@@ -118,14 +148,14 @@ export default function PlayersList(props: PlayersListProps) {
           return (
             <View>
               <TouchableOpacity
-                onPress={(e) => challenges.acceptChallenge(challenge)}
+                onPress={() => challenges.acceptChallenge(challenge)}
               >
-                <Text style={styles.name}> accept </Text>
+                <Image style={styles.image} source={accept} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={(e) => challenges.deleteChallenge(challenge)}
+                onPress={() => challenges.deleteChallenge(challenge)}
               >
-                <Text style={styles.name}> deny </Text>
+                <Image style={styles.image} source={deny} />
               </TouchableOpacity>
             </View>
           );
@@ -139,14 +169,14 @@ export default function PlayersList(props: PlayersListProps) {
 
       return (
         <View key={opponent.email + challenge.discipline} style={styles.user}>
-          <View>
+          <View style={styles.left}>
             <Text style={styles.name}>{opponent.name}</Text>
-            <Text style={styles.name}>{challenge.discipline}</Text>
-            <Text style={styles.name}>
+            <Text style={styles.discipline}>{challenge.discipline}</Text>
+            <Text style={styles.level}>
               Lv. {opponent[challenge.discipline.toLowerCase() + "Level"]}
             </Text>
           </View>
-          <View>{getButtons()}</View>
+          <View style={styles.right}>{getButtons()}</View>
         </View>
       );
     });
@@ -155,9 +185,11 @@ export default function PlayersList(props: PlayersListProps) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text h1 style={styles.h1}>
-        Ongoing Challenges
-      </Text>
+      {challenges.challenges.length > 0 && (
+        <Text h1 style={styles.h1}>
+          Ongoing Challenges
+        </Text>
+      )}
       {getChallenges()}
       <Text h1 style={styles.h1}>
         Nearby users
